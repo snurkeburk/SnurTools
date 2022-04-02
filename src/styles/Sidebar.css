@@ -1,0 +1,253 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-main {
+    background-color: rgba(0, 0, 0, 0.568);
+    height: calc(100vh - 70px);
+    width: calc(90% + 0rem);
+    border-radius: 1.5rem;
+    padding: 1rem 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    backdrop-filter: blur(2px);
+}
+.snurs {
+    text-align: left;
+    font-size: 0.8em;
+}
+.profile-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.profile-pic {
+    margin: .5rem 0rem;
+    border-radius: 50%;
+    width: 3.4rem;
+}
+.username-container {
+    display: flex;
+    flex-direction: column;
+}
+.username{
+    font-size: 1.3rem;
+}
+.profile-tag {
+    font-size: .9rem;
+    text-align: left;
+    color: yellow;
+}
+.quick-view-todo {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.quick-view-todo .qvt-p {
+    font-size: 1.3rem;
+}
+.quick-view-todo h2 {
+    font-size: 1.15rem;
+}
+.quick-view-todo p {
+    margin-top: 0.3rem;
+    font-size: 1rem;
+}
+.currrent-todo {
+    margin-top: 1rem;
+    background-color: #396FD9;
+    border-radius: 2rem;
+    padding: 0.6rem;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+
+}
+.contacts-title, .groups-title {
+    width: 100%;
+    font-size: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.contacts {
+    width: 100%;
+    min-height: 3.5rem;
+    margin-top: 0rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border-left-style: solid;
+    border-width: .1px;
+    overflow-y:scroll;
+    white-space: nowrap;
+}
+     /* Designing for scroll-bar */
+     ::-webkit-scrollbar {
+        width: 6px;
+    }
+  
+    /* Track */
+    ::-webkit-scrollbar-track {
+        background: rgba(220, 220, 220, 0);
+        border-radius: 5px;
+    }
+ 
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.205);
+        border-radius: 5px;
+    }
+  
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.308);
+    }
+.contacts-title h2{
+    font-size: 1.4rem;
+}
+.contacts .friend{
+    display:grid;
+    grid-template-columns: .3fr 1fr;
+    text-align: left;
+    font-size: 1.2rem;
+    width: 100%;
+    padding: 0.5rem 0rem;
+}
+.contacts .friend:hover{
+    cursor: pointer;
+}
+.contacts .friend-top {
+    display: flex;
+    grid-column: 2;
+    margin-left: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+
+}
+
+.contacts .friend p {
+    font-size: .8rem;
+    color:rgb(150, 150, 150);
+    font-weight: 1000;
+}
+
+.friend-pic {
+    grid-column: 1;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 50%;
+    margin-left: 1rem;
+}
+
+
+
+.groups {
+    width: 100%;
+    min-height: 3.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border-left-style: solid;
+    border-width: .1px;
+    overflow-y:scroll;
+    white-space: nowrap;
+}
+.groups-title h2{
+    font-size: 1.4rem;
+}
+.groups .group{
+    display:grid;
+    grid-template-columns: .3fr 1fr;
+    text-align: left;
+    font-size: 1.2rem;
+    width: 100%;
+    padding: 0.5rem 0rem;
+}
+.groups .group:hover{
+    cursor: pointer;
+}
+.groups .group-top {
+    display: flex;
+    grid-column: 2;
+    margin-left: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+
+}
+
+.groups .group p {
+    font-size: .8rem;
+    color:rgb(150, 150, 150);
+    font-weight: 1000;
+}
+
+.group-pic {
+    grid-column: 1;
+    background-color: #396FD9;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 50%;
+    margin-left: 1rem;
+}
+.sidebar-buttons-bot{
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  
+}
+.signout{
+    transform: rotate(180deg);
+}
+.button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    width: 2rem;
+    height: 2rem;
+    font-size: 1.3rem;
+    color: white;
+    border-style: solid;
+    border-radius: 50%;
+    border-width: .1px;
+    border-color: white;
+}
+.sidebar-buttons-bot-l{
+    width: 40%;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+@media screen and (max-height: 593px) {
+    .sidebar-main{
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+    ::-webkit-scrollbar {
+        width: 6px;
+    }
+  
+    /* Track */
+    ::-webkit-scrollbar-track {
+        border-radius: 5px;
+    }
+    .sidebar-buttons-bot{
+        position: sticky;
+        margin-top: 1rem;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        bottom: 0rem;
+        width: 100%;
+    }
+    .contacts-title, .groups-title {
+        margin-top:1rem;
+    }
+  }

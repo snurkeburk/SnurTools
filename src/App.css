@@ -1,3 +1,9 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap");
+* {
+  padding: 0;
+  margin: 0;
+}
+
 .App {
   text-align: center;
 }
@@ -14,7 +20,10 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #1a1c22;
+  background-image: url("images/asciidog\ \(2\).PNG");
+  background-repeat: no-repeat;
+  background-size: cover;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -22,10 +31,52 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  font-family: "Roboto", sans-serif;
+}
+
+.login-container{
+  background-color: #585f7417;
+  backdrop-filter: blur(20px);
+  width: calc(100% - 20vw);
+  height: calc(85vh + 5vh);
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  border-radius: 5rem;
+  justify-content: center;
+  z-index: 1;
 }
 
 .App-link {
   color: #61dafb;
+}
+
+.sign-in-btn {
+  padding: 0.5rem 1rem;
+  background: none;
+  border-style: solid;
+  color: white;
+  border-width: 0.1px;
+  border-radius: 2rem;
+  font-weight: 100;
+  font-size: 1.4rem;
+}
+.sign-in-btn:hover {
+  cursor: pointer;
+}
+
+.Home-header {
+  background-color: #1a1c22;
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+  font-family: "Roboto", sans-serif;
 }
 
 @keyframes App-logo-spin {
