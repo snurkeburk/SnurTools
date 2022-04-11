@@ -1,3 +1,300 @@
 .Home-header {
-    background-image: url("../images/bg.jpg");
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0rem 1.3rem;
+}
+.Home-header .home-sidebar-container {
+    width: 16rem;
+}
+.Home-header .home-tasks-container {
+    width: 100%;
+    margin-left: 4rem;
+
+}
+.Tasks-header {
+    width: 100%;
+}
+.tasks-top {
+    display: grid;
+    grid-template-columns: .5fr 1fr .5fr;
+    background-color: rgba(0, 0, 0, 0.568);
+    height: 3rem;
+    border-top-left-radius: 1.5rem;
+    border-top-right-radius: 1.5rem;
+    margin-bottom: 1px;
+}
+.tasks-top div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.tasks-top-left-friend {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+    justify-content: space-evenly;
+}
+.tasks-top-left-friend div {
+    padding: 0rem 2rem;
+}
+.friend-tasks-back-btn .f-t-b-btn{
+    display: flex;
+    justify-content: center;
+    align-self: center;
+    padding: .2rem;
+    border-radius: 50%;
+    margin: none;
+    background-color: rgba(240, 248, 255, 0.212);
+}
+.task-edit-permissions {
+    font-size: 0.9rem;
+    padding: .2rem 1rem;
+}
+
+.tasks-main {
+    background-color: rgba(0, 0, 0, 0.568);
+    backdrop-filter: blur(0px);
+    height: calc(100vh - 5.5rem);
+    border-bottom-left-radius: 1.5rem;
+    border-bottom-right-radius: 1.5rem;
+}
+
+.tasks-inner {
+    padding: 1rem;
+}
+.task {
+    background-color: rgb(154, 115, 218);
+    margin: 1rem;
+    width: calc(30vw + .4rem);
+    max-width: 16rem;
+    min-width: max-content;
+    padding: .2rem 1.5rem;
+    border-radius: 1.5rem;
+    text-align: center;
+    box-shadow: 2px 2px 4px 1px rgba(0,0,0,0.25); /*OPTIONAL LATER*/
+}
+
+.task-top-snurs {
+    display: flex;
+    align-items: flex-start;
+}
+
+
+
+.task-date-button {
+    background: none;
+    border-style: none;
+    color: white;
+    width: 3rem;
+    font-size: 1.5rem;
+}
+.task-top-middle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.task-top-middle .task-selected-date {
+    font-size: calc(40% + .7vw);
+}
+.task-title,.task-time,.task-content {
+    font-size: 1.2rem;
+    font-weight: 100;
+}
+.task-comment {
+    font-size: 0.9rem;
+    color:rgba(187, 187, 187, 0.795);
+    font-weight:1000;
+    font-style: italic;
+}
+.task-snurs {
+    display: flex;
+    justify-content: space-between;
+}
+
+.inner-task-snurs-tid {
+    font-size: 0.6rem;
+    color: rgba(255, 255, 255, 0.295);
+}
+
+.task-snurs .inner-task-snurs{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-left: -1rem;
+}
+
+.task-snurs h1 {
+    font-size: 1.2rem;
+    font-weight: 100;
+}
+
+.task-content {
+
+}
+
+.tasks-bot {
+    position: absolute;
+    bottom: 0;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+.inner-bot{
+    margin-left: .5rem;
+    margin-right: .5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 0.4rem;
+}
+
+.add-task-button {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: rgb(100,122,163);
+    background: linear-gradient(140deg, rgba(100,122,163,1) 0%, rgba(191,113,198,1) 100%);
+    font-size: 2.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-style: none;
+    color: white;
+
+}
+.clear-all-button {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: rgb(100,122,163);
+    background: linear-gradient(140deg, rgb(163, 100, 100) 0%, rgb(163, 11, 57) 100%);
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-style: none;
+    color: white;
+}
+.newpage-button {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: rgb(128,255,217);
+    background: linear-gradient(140deg, rgba(128,255,217,1) 0%, rgba(110,234,115,1) 100%);
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-style: none;
+    color: white;
+}
+.under-btn-text{
+    font-size: .7rem;
+    color: rgba(255, 255, 255, 0.842);
+    text-align: center;
+}
+
+.new-task-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.new-task {
+    width: calc(30vw + 3rem);
+    border-radius: 1.5rem;
+    padding: 0.5rem 1rem;
+    overflow-y: scroll;
+}
+.new-task h1 {
+    font-size: 1.2rem;
+}
+.new-task p {
+    font-size: 1.3rem;
+    text-align: center;
+}
+
+.time-list {
+    display: flex;
+    justify-content: center;
+    margin-right: -.5rem;
+    padding-top: 1rem;
+}
+
+
+.hour-list, .minute-list {
+    max-height: 10rem;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.hour-list button, .minute-list button {
+    background: none;
+    width: 1.5rem;
+    color: white;
+    border-style: solid;
+    border-color: white;
+    border-width: .1px;
+    border-radius: 1rem;
+    font-size: 1rem;
+    margin: .1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: .1rem .2rem;
+}
+.hour-list button:hover, .minute-list button:hover {
+    cursor: pointer;
+}
+.newtask-color {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items:center ;
+}
+.newtask-color p{
+    width: 15rem;
+    z-index: 2;
+    margin-bottom: -0.1rem;
+}
+.newtask-field-title {
+    background: none;
+    border-style: none;
+    border-bottom-style: solid;
+    border-bottom-color: white;
+    border-width: .1px;
+    font-size: 1.2rem;
+    text-align: center;
+    color: white;
+}
+.newtask-field {
+    background: none;
+    border-style: none;
+    border-style: solid;
+    border-color: white;
+    border-width: .1px;
+    font-size: 1.2rem;
+    text-align: center;
+    color: white;
+    font-weight: 100;
+}
+
+.newtask-field::placeholder, .newtask-field-title::placeholder {
+    color: rgba(255, 255, 255, 0.212);
+}
+.newtask-field:focus, .newtask-field-title:focus {
+    outline: none;
+}
+.newtask-field {
+    height: 10rem;
+    width: 100%;
 }

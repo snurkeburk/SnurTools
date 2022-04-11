@@ -1,5 +1,5 @@
 import react, { useState } from "react";
-import { db } from "../services/firebase-config";
+import { authentication, db } from "../../services/firebase-config";
 import Cookies from "js-cookie";
 import {
   collection,
@@ -20,7 +20,7 @@ export async function FetchProfileInfo(uid) {
   const docSnap = await getDoc(docRef);
 
   if (docSnap.exists()) {
-    console.log("Document data:", docSnap.data());
+    return docSnap.data().timezone + "$" + docSnap.data().username;
   } else {
     // doc.data() will be undefined in this case
     console.log("No such document!");

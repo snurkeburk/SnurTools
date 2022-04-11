@@ -1,8 +1,8 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { HandleUser } from "../compontents/HandleUser";
-import { getAuth } from "firebase/auth";
+import { HandleUser } from "../compontents/Auth/HandleUser";
+import { getAuth, signOut } from "firebase/auth";
 import {
   getFirestore,
   collection,
@@ -11,6 +11,8 @@ import {
   getDocs,
 } from "firebase/firestore";
 import firebase from "firebase/compat/app";
+import ValidateUser from "../pages/ValidateUser";
+import { Navigate } from "react-router-dom";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -32,14 +34,28 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const authentication = getAuth(app);
 export { authentication, db };
+
+export const auth = getAuth();
+export function signOutOfGoogle() {
+  signOut(auth)
+    .then(() => {
+      // Sign-out successful.
+      window.location.reload(true);
+    })
+    .catch((error) => {
+      // An error happened.
+    });
+}
 export const signInWithGoogle = () => {
   const provider = new GoogleAuthProvider();
   signInWithPopup(authentication, provider)
     .then((re) => {
-      console.log(re);
       HandleUser(re.user.displayName, re.user.email, re.user.uid);
     })
     .catch((err) => {
       console.log(err);
+    })
+    .finally(() => {
+      return true;
     });
 };
