@@ -6,6 +6,8 @@ import { BsArrowLeftCircle, BsArrowRightCircle } from "react-icons/bs";
 import { months } from "../Lists";
 import Clock from "react-live-clock";
 
+import { RiLayoutGridFill } from "react-icons/ri";
+
 import {
   DatePick,
   switchDay,
@@ -24,6 +26,13 @@ const Tasks = (e) => {
   const [chosenDay, setChosenDay] = useState("not selected");
   const [fetchedDate, setFetchedDate] = useState("loading date...");
   const [chosenDate, setChosenDate] = useState("loading date...");
+  //TODO fetch current settings for styles
+  const [taskInnerDisplay, setTaskInnerDisplay] = useState("flex");
+  const [taskInnerFlexDirection, setTaskInnerFlexDirection] =
+    useState("column");
+  const [taskInnerWrap, setTaskInnerWrap] = useState("wrap");
+  const [taskInnerAlign, setTaskInnerAlign] = useState("center");
+  const [taskMargin, setTaskMargin] = useState(15);
   //? when you press arrow button, call function that replaces date
   //? if button has been pressed, change view
   useEffect(() => {
@@ -33,7 +42,7 @@ const Tasks = (e) => {
   const [finalTaskList, setFinalTaskList] = useState([]);
   const [loadingTasks, setLoadingTasks] = useState(true);
   const [newTask, setNewTask] = useState(false);
-  const [AddTaskDisplay, setAddTaskDisplay] = useState("block");
+  const [AddTaskDisplay, setAddTaskDisplay] = useState("none");
 
   useEffect(() => {
     getCurrentMonth().then((re) => setChosenDate(re));
@@ -46,7 +55,7 @@ const Tasks = (e) => {
       setNewTask(false);
       const timer = setTimeout(() => {
         setAddTaskDisplay("none");
-      }, 300);
+      }, 0);
     } else {
       setAddTaskDisplay("block");
       setNewTask(true);
@@ -71,6 +80,34 @@ const Tasks = (e) => {
     }
   }
 
+  const handleLayoutChange = (e) => {
+    console.log(e);
+    switch (e.type) {
+      case "direction":
+        // change flex directions
+        setTaskInnerFlexDirection(e.option);
+        break;
+      case "wrap":
+        setTaskInnerWrap(e.option);
+        break;
+      case "margin":
+        let p = taskMargin;
+        switch (e.option) {
+          case "increase":
+            p++;
+            setTaskMargin(p);
+            break;
+          case "decrease":
+            p--;
+            setTaskMargin(p);
+            break;
+        }
+        break;
+      case "align":
+        setTaskInnerAlign(e.option);
+        break;
+    }
+  };
   return (
     <div className="Tasks-header">
       <div>
@@ -113,13 +150,82 @@ const Tasks = (e) => {
             </button>
           </div>
           <div>
-            <p className="task-edit-permissions">Edit permissions</p>
+            <p className="task-edit-permissions">
+              <RiLayoutGridFill />
+            </p>
+            <div className="task-edit-style-container">
+              <button
+                onClick={() =>
+                  handleLayoutChange({ type: "direction", option: "column" })
+                }
+              >
+                column
+              </button>
+              <button
+                onClick={() =>
+                  handleLayoutChange({ type: "direction", option: "row" })
+                }
+              >
+                row
+              </button>
+              <button
+                onClick={() =>
+                  handleLayoutChange({ type: "align", option: "center" })
+                }
+              >
+                center
+              </button>
+              <button
+                onClick={() =>
+                  handleLayoutChange({ type: "align", option: "" })
+                }
+              >
+                decenter
+              </button>
+
+              <button
+                onClick={() =>
+                  handleLayoutChange({ type: "wrap", option: "wrap" })
+                }
+              >
+                wrap
+              </button>
+              <button
+                onClick={() =>
+                  handleLayoutChange({ type: "wrap", option: "nowrap" })
+                }
+              >
+                no wrap
+              </button>
+              <button
+                onClick={() =>
+                  handleLayoutChange({ type: "margin", option: "increase" })
+                }
+              >
+                margin +
+              </button>
+              <button
+                onClick={() =>
+                  handleLayoutChange({ type: "margin", option: "decrease" })
+                }
+              >
+                margin -
+              </button>
+            </div>
           </div>
         </div>
         <motion.div className="tasks-main">
           {!loadingTasks ? (
-            <div className="tasks-inner">
-              {finalTaskList.length > 0 ? (
+            <div
+              className="tasks-inner"
+              style={{
+                display: taskInnerDisplay,
+                flexDirection: taskInnerFlexDirection,
+                flexWrap: taskInnerWrap,
+                alignItems: taskInnerAlign,
+              }}
+            >
+              {finalTaskList.length > 0 && !newTask > 0 ? (
                 finalTaskList.map((task, index) => (
                   <motion.div
                     initial={{ opacity: 0 }}
@@ -127,56 +233,17 @@ const Tasks = (e) => {
                     transition={{ duration: 0.2, delay: 0 }}
                     className="task"
                     key={task.tid}
-                    style={{ backgroundColor: task.color }}
+                    style={{
+                      backgroundColor: task.color,
+                      margin: taskMargin,
+                    }}
                   >
-                    {task.content ? (
-                      <motion.div>
-                        <div
-                          className="task-snurs"
-                          style={{ paddingTop: "0.2rem" }}
-                        >
-                          <div className="inner-task-snurs">
-                            <img
-                              className="profile-pic"
-                              src={
-                                "https://cdn.discordapp.com/attachments/937167004165615657/960581859568390254/paintcoin.png"
-                              }
-                              style={{
-                                width: "1.5rem",
-                                boxShadow: "2px 2px 4px 1px rgba(0,0,0,0.25)",
-                              }}
-                            />
-                            <h1>{task.snurs}</h1>
-                          </div>
-                          <div className="inner-task-snurs-tid">
-                            <p>{task.tid}</p>
-                          </div>
-                        </div>
-                        <div className="task-top">
-                          <div className="task-top-title">
-                            <h1 className="task-title">{task.title}</h1>
-                          </div>
-                        </div>
-                        <h1 className="task-time">{task.time}</h1>
-                        <h1 className="task-content">{task.content}</h1>
-                        {task.comment.length > 0 ? (
-                          <p className="task-comment">
-                            "{task.comment}" - {task.addedBy}
-                          </p>
-                        ) : (
-                          <div></div>
-                        )}
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          width: "12rem",
-                        }}
+                    <motion.div>
+                      <div
+                        className="task-snurs"
+                        style={{ paddingTop: "0.2rem" }}
                       >
-                        <div className="task-snurs">
+                        <div className="inner-task-snurs">
                           <img
                             className="profile-pic"
                             src={
@@ -189,10 +256,49 @@ const Tasks = (e) => {
                           />
                           <h1>{task.snurs}</h1>
                         </div>
-                        <h1 className="task-title">{task.title}</h1>
-                        <h1 className="task-time">{task.time}</h1>
-                      </motion.div>
-                    )}
+                        <div className="inner-task-snurs-tid">
+                          <p>{task.tid}</p>
+                        </div>
+                      </div>
+                      <div className="inner-task-main">
+                        <div className="task-top">
+                          <div className="task-top-title">
+                            <h1
+                              className="task-title"
+                              style={
+                                task.content.length > 0
+                                  ? { paddingBottom: "1rem" }
+                                  : {
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      paddingTop: "0.5rem",
+                                    }
+                              }
+                            >
+                              {task.title}
+                              <h1 className="task-time">{task.time}</h1>
+                            </h1>
+                          </div>
+                        </div>
+                      </div>
+                      <h1
+                        className="task-content"
+                        style={
+                          task.content.length > 30
+                            ? { textAlign: "left" }
+                            : { textAlign: "center" }
+                        }
+                      >
+                        {task.content}
+                      </h1>
+                      {task.comment.length > 0 ? (
+                        <p className="task-comment">
+                          "{task.comment}" - {task.addedBy}
+                        </p>
+                      ) : (
+                        <div></div>
+                      )}
+                    </motion.div>
                   </motion.div>
                 ))
               ) : (
@@ -206,12 +312,15 @@ const Tasks = (e) => {
               <p>Loading tasks...</p>
             </div>
           )}
+
           {newTask ? (
             <motion.div
+              className="new-task-outer-container"
               initial={{ y: 1, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{
                 duration: 0.2,
+                delay: 0.4,
                 type: "just",
                 stiffness: 100,
               }}

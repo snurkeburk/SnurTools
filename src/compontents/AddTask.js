@@ -3,22 +3,17 @@ import { motion } from "framer-motion";
 import "../styles/Home.css";
 import { FetchProfileInfo } from "./Fetch/FetchProfile";
 import { authentication, db } from "../services/firebase-config";
-import { BsFillCloudUploadFill } from "react-icons/bs";
-import {
-  SketchPicker,
-  GithubPicker,
-  HuePicker,
-  AlphaPicker,
-  CirclePicker,
-} from "react-color";
-import { Collapse } from "react-collapse";
-import { doc, setDoc } from "firebase/firestore";
-import { useParams } from "react-router-dom";
 
+import { AiOutlinePlus } from "react-icons/ai";
+import { CirclePicker } from "react-color";
+import { Collapse } from "react-collapse";
+import { arrayRemove, doc, setDoc } from "firebase/firestore";
+import { useParams } from "react-router-dom";
+import { MdExpandMore } from "react-icons/md";
 function AddTask(tid) {
   const [selectedTimeZone, setSelectedTimezone] = useState([]);
   const [currentUsername, setCurrentUsername] = useState([]);
-  const [selectedSnur, setSelectedSnur] = useState(false);
+  const [selectedSnur, setSelectedSnur] = useState("0");
   const [title, setTitle] = useState([]);
   const [content, setContent] = useState([]);
   const [comment, setComment] = useState([]);
@@ -36,6 +31,13 @@ function AddTask(tid) {
   const [minute, setMinute] = useState("00");
   const [Snur, setSnur] = useState("0");
   const [selectedBg, setSelectedBg] = useState("#006B76");
+  const [timeHeight, setTimeHeight] = useState("10rem");
+  const [titleDone, setTitleDone] = useState(false);
+  const [timeDone, setTimeDone] = useState(false);
+  const [contentDone, setConentDone] = useState(false);
+  const [snursDone, setSnursDone] = useState(false);
+  const [commentDone, setCommentDone] = useState(false);
+  const [previewVisibility, setPreviewVisibility] = useState("block");
   let hoursAM = ["1", "2", "3"];
   const { id } = useParams();
   let snurs = ["1", "2", "3", "4", "5", "6", "7"];
@@ -205,7 +207,7 @@ function AddTask(tid) {
 
   async function uploadNewTaskDB() {
     const timer = setTimeout(() => {
-      setSettingTitle(true);
+      menuSwitch("reset");
     }, 1000);
     let date = new Date();
     let _date = date.toLocaleDateString();
@@ -247,226 +249,415 @@ function AddTask(tid) {
   function menuSwitch(current) {
     switch (current) {
       case "title":
-        setSettingTitle(false);
-        setSettingTime(true);
+        if (settingTitle) {
+          setSettingTitle(false);
+          setSettingFinal(true);
+          setPreviewVisibility("block");
+          setSettingTime(true);
+          setTitleDone(true);
+          const timer = setTimeout(() => {
+            setSettingColor(true);
+          }, 500);
+        } else {
+          setSettingTitle(true);
+        }
         break;
       case "time":
-        setSettingTime(false);
-        setSettingContent(true);
+        if (!settingTime) {
+          setSettingTime(true);
+        } else {
+          setSettingTime(false);
+          setTimeHeight("12rem");
+          setSettingContent(true);
+          setTimeDone(true);
+        }
         break;
       case "content":
-        setSettingContent(false);
-        setSettingSnurs(true);
-
+        if (!settingContent) {
+          setSettingContent(true);
+        } else {
+          setSettingContent(false);
+          setSettingSnurs(true);
+          setConentDone(true);
+        }
         break;
       case "snurs":
-        setSettingSnurs(false);
-        setSettingComment(true);
+        if (!settingSnurs) {
+          setSettingSnurs(true);
+        } else {
+          setSettingSnurs(false);
+          setSettingComment(true);
+          setSnursDone(true);
+        }
         break;
       case "comment":
+        if (!settingComment) {
+          setSettingComment(true);
+        } else {
+          setSettingComment(false);
+          setSelectedBg("rgba(255, 255, 255, 0.242)");
+          setCommentDone(true);
+          setSettingFinal(true);
+        }
+        break;
+      case "reset":
         setSettingComment(false);
         setSelectedBg("rgba(255, 255, 255, 0.242)");
-        setSettingFinal(true);
-        setSettingColor(true);
+        setSettingColor(false);
+        setCommentDone(false);
+        setSettingFinal(false);
+        setSettingTime(false);
+        setSettingSnurs(false);
+        setSettingTitle(false);
+        setSettingContent(false);
+        setTitleDone(false);
+        setTimeDone(false);
+        setConentDone(false);
+        setSnursDone(false);
+        setCommentDone(false);
+        setSnur("0");
+        setHour("12");
+        setMinute("00");
+        setContent("");
+        setTitle("");
+        setSelectSnurActive(false);
+
         break;
     }
   }
+
+  const newTaskVariants = {
+    slideOut: { x: 0, transition: { duration: 0.5 } },
+  };
   return (
     <motion.div className="new-task-container">
-      <motion.div
-        className="new-task"
-        style={{ backgroundColor: "rgba(255, 255, 255, 0.242)" }}
-      >
-        <Collapse isOpened={settingTitle}>
-          {id ? <h1>New task for {id}</h1> : <p>New task</p>}
-          <p>Give your task a title:</p>
-          <motion.input
-            className="newtask-field-title"
-            type="text"
-            id="title"
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder={"A nice title"}
-          ></motion.input>
-          <button onClick={() => menuSwitch("title")}>Next</button>
-        </Collapse>
-        <Collapse isOpened={settingTime}>
-          <p>Time</p>
-          <p>
-            {hour} : {minute}
-          </p>
-          <div className="time-list">
-            <motion.div className="hour-list">
-              {selectedTimeZone == "12" ? (
-                hoursAM.length > 0 ? (
-                  hoursAM.map((hour) => (
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      transition={{ duration: 0.1 }}
-                      key={hour}
-                      onClick={sethour}
-                    >
-                      {hour}
-                    </motion.button>
-                  ))
-                ) : (
-                  <div>
-                    <p>An error occured with the time thing.</p>
-                  </div>
-                )
-              ) : hours.length > 0 ? (
-                hours.map((hour) => (
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    transition={{ duration: 0.1 }}
-                    key={hour}
-                    onClick={sethour}
-                  >
-                    {hour}
-                  </motion.button>
-                ))
+      <motion.div className="new-task-wrapper">
+        <motion.div
+          className="new-task"
+          variants={newTaskVariants}
+          initial={{ x: "calc(50% - 1rem)" }}
+          animate={settingFinal ? "slideOut" : "stop"}
+        >
+          <div className="new-inner-task">
+            {id ? (
+              <h1 className="n-t-t-h">New task for {id}</h1>
+            ) : (
+              <h1 className="n-t-t-h">New task</h1>
+            )}
+            <p>Give your task a title:</p>
+            <Collapse isOpened={settingTitle}>
+              <motion.input
+                className="newtask-field-title"
+                type="text"
+                id="title"
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder={"A nice title"}
+                multiple={true}
+              ></motion.input>
+            </Collapse>
+            <Collapse isOpened={true}>
+              {titleDone ? (
+                <motion.button
+                  className="new-task-nxt-btn"
+                  onClick={() =>
+                    setSettingTitle((settingTitle) => !settingTitle)
+                  }
+                >
+                  <MdExpandMore />
+                </motion.button>
               ) : (
-                <div>
-                  <p>An error occured with the time thing.</p>
-                </div>
+                <button
+                  className="new-task-nxt-btn"
+                  onClick={() => menuSwitch("title")}
+                >
+                  <MdExpandMore />
+                </button>
               )}
-            </motion.div>
-            <motion.div className="minute-list">
-              {minutes.length > 0 ? (
-                minutes.map((minute) => (
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    transition={{ duration: 0.1 }}
-                    key={minute}
-                    onClick={setminute}
-                  >
-                    {minute}
-                  </motion.button>
-                ))
-              ) : (
-                <div>
-                  <p>An error occured with the time thing.</p>
-                </div>
-              )}
-            </motion.div>
+            </Collapse>
           </div>
-          <button onClick={() => menuSwitch("time")}>Next</button>
-        </Collapse>
-        <Collapse isOpened={settingContent}>
-          <p>Additional notes</p>
-          <motion.input
-            className="newtask-field"
-            type="text"
-            id="content"
-            onChange={(e) => setContent(e.target.value)}
-            placeholder={"This is what has to be done in detail"}
-          ></motion.input>
-          <button onClick={() => menuSwitch("content")}>Next</button>
-        </Collapse>
-        <Collapse isOpened={settingSnurs}>
-          <p>Award Snurs:</p>
-          {snurs.length > 0 ? (
-            snurs.map((snur) =>
-              snur <= selectedSnur ? (
-                <motion.button
-                  whileHover={{ scale: 1.2 }}
-                  transition={{ duration: 0.1 }}
-                  onMouseEnter={hoversnur}
-                  onMouseLeave={nonhoversnur}
-                  key={snur}
-                  onClick={setsnur}
-                  style={{
-                    opacity: "100%",
-                    borderRadius: "50%",
-                    background: "none",
-                    borderStyle: "none",
-                    scale: selectedSnurHover,
-                  }}
-                >
-                  <p
-                    style={{
-                      fontSize: "0.8rem",
-                      color: "yellow",
-                      opacity: "100%",
-                    }}
-                  >
-                    <img
-                      className="profile-pic"
-                      src={
-                        "https://cdn.discordapp.com/attachments/937167004165615657/960581859568390254/paintcoin.png"
-                      }
-                      style={{
-                        width: "1.5rem",
-                        boxShadow: "2px 2px 4px 1px rgba(0,0,0,0.25)",
-                      }}
-                    />
-                    {snur}
-                  </p>
-                </motion.button>
-              ) : (
-                <motion.button
-                  whileHover={{ scale: selectedSnurHover }}
-                  transition={{ duration: 0.1 }}
-                  onMouseEnter={hoversnur}
-                  onMouseLeave={nonhoversnur}
-                  key={snur}
-                  onClick={setsnur}
-                  style={{
-                    opacity: "100%",
-                    filter: "grayscale(100%)",
-                    borderRadius: "50%",
-                    background: "none",
-                    borderStyle: "none",
-                  }}
-                >
-                  <p
-                    style={{
-                      fontSize: "0.8rem",
-                      color: "yellow",
-                      opacity: "100%",
-                    }}
-                  >
-                    <img
-                      className="profile-pic"
-                      src={
-                        "https://cdn.discordapp.com/attachments/937167004165615657/960581859568390254/paintcoin.png"
-                      }
-                      style={{
-                        width: "1.5rem",
-                        boxShadow: "2px 2px 4px 1px rgba(0,0,0,0.25)",
-                      }}
-                    />
-                    {snur}
-                  </p>
-                </motion.button>
-              )
-            )
-          ) : (
-            <div>An error occured.</div>
-          )}
-          <button onClick={() => menuSwitch("snurs")}>Next</button>
-        </Collapse>
+          <div className="new-inner-task">
+            <p>Time</p>
 
-        <Collapse isOpened={settingComment}>
-          <p>Additional comment</p>
-          <motion.input
-            className="newtask-field"
-            type="text"
-            id="comment"
-            onChange={(e) => setComment(e.target.value)}
-            placeholder={"You got this, pussy!"}
-          ></motion.input>
-          <button onClick={() => menuSwitch("comment")}>Review</button>
-        </Collapse>
-        <Collapse isOpened={settingFinal}>
-          <motion.div className="new-task-preview">
-            <div className="tasks-inner">
-              <div className="task" style={{ backgroundColor: selectedBg }}>
-                {content.length > 0 ? (
-                  <motion.div>
-                    <div
-                      className="task-snurs"
-                      style={{ paddingTop: "0.2rem" }}
+            <Collapse isOpened={settingTime}>
+              <p>
+                {hour} : {minute}
+              </p>
+              <div className="time-list">
+                <motion.div
+                  className="hour-list"
+                  style={{ maxHeight: timeHeight }}
+                >
+                  {selectedTimeZone == "12" ? (
+                    hoursAM.length > 0 ? (
+                      hoursAM.map((hour) => (
+                        <motion.button
+                          whileHover={{ scale: 1.1 }}
+                          transition={{ duration: 0.1 }}
+                          key={hour}
+                          onClick={sethour}
+                        >
+                          {hour}
+                        </motion.button>
+                      ))
+                    ) : (
+                      <div>
+                        <p>An error occured with the time thing.</p>
+                      </div>
+                    )
+                  ) : hours.length > 0 ? (
+                    hours.map((hour) => (
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        transition={{ duration: 0.1 }}
+                        key={hour}
+                        onClick={sethour}
+                      >
+                        {hour}
+                      </motion.button>
+                    ))
+                  ) : (
+                    <div>
+                      <p>An error occured with the time thing.</p>
+                    </div>
+                  )}
+                </motion.div>
+                <motion.div
+                  className="minute-list"
+                  style={{ maxHeight: timeHeight }}
+                >
+                  {minutes.length > 0 ? (
+                    minutes.map((minute) => (
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        transition={{ duration: 0.1 }}
+                        key={minute}
+                        onClick={setminute}
+                      >
+                        {minute}
+                      </motion.button>
+                    ))
+                  ) : (
+                    <div>
+                      <p>An error occured with the time thing.</p>
+                    </div>
+                  )}
+                </motion.div>
+              </div>
+            </Collapse>
+            <Collapse isOpened={true}>
+              {timeDone ? (
+                <button
+                  className="new-task-nxt-btn"
+                  onClick={() =>
+                    settingTime ? setSettingTime(false) : setSettingTime(true)
+                  }
+                >
+                  <MdExpandMore />
+                </button>
+              ) : (
+                <button
+                  className="new-task-nxt-btn"
+                  onClick={() => menuSwitch("time")}
+                >
+                  <MdExpandMore />
+                </button>
+              )}
+            </Collapse>
+          </div>
+          <div className="new-inner-task">
+            <p>Additional notes</p>
+            <Collapse isOpened={settingContent}>
+              <form className="newtask-form">
+                <motion.input
+                  className="newtask-field"
+                  type="text"
+                  id="content"
+                  onChange={(e) => setContent(e.target.value)}
+                  placeholder={"This is what has to be done in detail"}
+                ></motion.input>
+              </form>
+            </Collapse>
+            <Collapse isOpened={true}>
+              {contentDone ? (
+                <button
+                  className="new-task-nxt-btn"
+                  onClick={() =>
+                    settingContent
+                      ? setSettingContent(false)
+                      : setSettingContent(true)
+                  }
+                >
+                  <MdExpandMore />
+                </button>
+              ) : (
+                <button
+                  className="new-task-nxt-btn"
+                  onClick={() => menuSwitch("content")}
+                >
+                  <MdExpandMore />
+                </button>
+              )}
+            </Collapse>
+          </div>
+          <div className="new-inner-task">
+            <p>Award Snurs:</p>
+            <Collapse isOpened={settingSnurs}>
+              {snurs.length > 0 ? (
+                snurs.map((snur) =>
+                  snur <= selectedSnur ? (
+                    <motion.button
+                      whileHover={{ scale: 1.2 }}
+                      transition={{ duration: 0.1 }}
+                      onMouseEnter={hoversnur}
+                      onMouseLeave={nonhoversnur}
+                      key={snur}
+                      onClick={setsnur}
+                      style={{
+                        opacity: "100%",
+                        borderRadius: "50%",
+                        background: "none",
+                        borderStyle: "none",
+                        scale: selectedSnurHover,
+                      }}
                     >
+                      <p
+                        style={{
+                          fontSize: "0.8rem",
+                          color: "yellow",
+                          opacity: "100%",
+                        }}
+                      >
+                        <img
+                          className="profile-pic"
+                          src={
+                            "https://cdn.discordapp.com/attachments/937167004165615657/960581859568390254/paintcoin.png"
+                          }
+                          style={{
+                            width: "1.5rem",
+                            boxShadow: "2px 2px 4px 1px rgba(0,0,0,0.25)",
+                          }}
+                        />
+                        {snur}
+                      </p>
+                    </motion.button>
+                  ) : (
+                    <motion.button
+                      whileHover={{ scale: selectedSnurHover }}
+                      transition={{ duration: 0.1 }}
+                      onMouseEnter={hoversnur}
+                      onMouseLeave={nonhoversnur}
+                      key={snur}
+                      onClick={setsnur}
+                      style={{
+                        opacity: "100%",
+                        filter: "grayscale(100%)",
+                        borderRadius: "50%",
+                        background: "none",
+                        borderStyle: "none",
+                      }}
+                    >
+                      <p
+                        style={{
+                          fontSize: "0.8rem",
+                          color: "yellow",
+                          opacity: "100%",
+                        }}
+                      >
+                        <img
+                          className="profile-pic"
+                          src={
+                            "https://cdn.discordapp.com/attachments/937167004165615657/960581859568390254/paintcoin.png"
+                          }
+                          style={{
+                            width: "1.5rem",
+                            boxShadow: "2px 2px 4px 1px rgba(0,0,0,0.25)",
+                          }}
+                        />
+                        {snur}
+                      </p>
+                    </motion.button>
+                  )
+                )
+              ) : (
+                <div>An error occured.</div>
+              )}
+            </Collapse>
+            <Collapse isOpened={true}>
+              {snursDone ? (
+                <button
+                  className="new-task-nxt-btn"
+                  onClick={() =>
+                    settingSnurs
+                      ? setSettingSnurs(false)
+                      : setSettingSnurs(true)
+                  }
+                >
+                  <MdExpandMore />
+                </button>
+              ) : (
+                <button
+                  className="new-task-nxt-btn"
+                  onClick={() => menuSwitch("snurs")}
+                >
+                  <MdExpandMore />
+                </button>
+              )}
+            </Collapse>
+          </div>
+          <div className="new-inner-task">
+            <p>Additional comment</p>
+            <Collapse isOpened={settingComment}>
+              <form className="newtask-form">
+                <motion.input
+                  className="newtask-field"
+                  type="text"
+                  id="comment"
+                  onChange={(e) => setComment(e.target.value)}
+                  placeholder={"You got this, pussy!"}
+                ></motion.input>
+              </form>
+            </Collapse>
+            <Collapse isOpened={true}>
+              {commentDone ? (
+                <button
+                  className="new-task-nxt-btn"
+                  onClick={() =>
+                    settingComment
+                      ? setSettingComment(false)
+                      : setSettingComment(true)
+                  }
+                >
+                  <MdExpandMore />
+                </button>
+              ) : (
+                <button
+                  className="new-task-nxt-btn"
+                  onClick={() => menuSwitch("comment")}
+                >
+                  <MdExpandMore />
+                </button>
+              )}
+            </Collapse>
+          </div>
+        </motion.div>
+
+        <Collapse isOpened={settingFinal}>
+          <motion.div
+            className="new-task-preview"
+            style={{
+              display: previewVisibility,
+            }}
+          >
+            <div className="tasks-inners" style={{ padding: "1rem" }}>
+              <div
+                className="task"
+                style={{
+                  backgroundColor: selectedBg,
+                }}
+              >
+                <motion.div>
+                  <div className="task-snurs" style={{ paddingTop: "0.2rem" }}>
+                    <div className="inner-task-snurs">
                       <img
                         className="profile-pic"
                         src={
@@ -477,63 +668,61 @@ function AddTask(tid) {
                           boxShadow: "2px 2px 4px 1px rgba(0,0,0,0.25)",
                         }}
                       />
-                      <h1>{Snur}</h1>
+                      <h1>{selectedSnur}</h1>
                     </div>
+                    <div className="inner-task-snurs-tid">
+                      <p></p>
+                    </div>
+                  </div>
+                  <div className="inner-task-main">
                     <div className="task-top">
                       <div className="task-top-title">
-                        <h1 className="task-title">{title}</h1>
+                        <h1
+                          className="task-title"
+                          style={
+                            content.length > 0
+                              ? { paddingBottom: "1rem" }
+                              : {
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  paddingTop: "0.5rem",
+                                }
+                          }
+                        >
+                          {title}
+                          <h1 className="task-time">
+                            {hour}:{minute}
+                          </h1>
+                        </h1>
                       </div>
                     </div>
-                    <h1 className="task-time">{globTime}</h1>
-                    <h1 className="task-content">{content}</h1>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      width: "12rem",
-                    }}
-                  >
-                    <div className="task-snurs">
-                      <img
-                        className="profile-pic"
-                        src={
-                          "https://cdn.discordapp.com/attachments/937167004165615657/960581859568390254/paintcoin.png"
-                        }
-                        style={{
-                          width: "1.5rem",
-                          boxShadow: "2px 2px 4px 1px rgba(0,0,0,0.25)",
-                        }}
-                      />
-                      <h1>{Snur}</h1>
-                    </div>
-                    <h1 className="task-title">{title}</h1>
-                    <h1 className="task-time">
-                      {hour}:{minute}
-                    </h1>
-                  </motion.div>
-                )}
+                  </div>
+                  <h1 className="task-content">{content}</h1>
+                  {comment.length > 0 ? (
+                    <p className="task-comment">
+                      "{comment}" - {currentUsername}
+                    </p>
+                  ) : (
+                    <div></div>
+                  )}
+                </motion.div>
               </div>
             </div>
+            <Collapse isOpened={settingColor}>
+              <div className="newtask-color">
+                <p>Select color:</p>
+                <CirclePicker className="colorpicker" onChange={colorChange} />
+              </div>
+            </Collapse>
+            <motion.button
+              onClick={() => uploadNewTaskDB()}
+              className="upload-task-button"
+              type="submit"
+            >
+              <AiOutlinePlus />
+              <p>ADD TASK</p>
+            </motion.button>
           </motion.div>
-          <Collapse isOpened={settingColor}>
-            <div className="newtask-color">
-              <p>Select color:</p>
-              <CirclePicker className="colorpicker" onChange={colorChange} />
-            </div>
-          </Collapse>
-          <motion.button
-            onClick={() => uploadNewTaskDB()}
-            whileHover={{ scale: 1.1 }}
-            transition={{ duration: 0.1 }}
-            className="upload-task-button"
-            type="submit"
-          >
-            <h1>Upload</h1>
-            <BsFillCloudUploadFill />{" "}
-          </motion.button>
         </Collapse>
       </motion.div>
     </motion.div>

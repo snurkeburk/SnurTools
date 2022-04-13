@@ -3,6 +3,7 @@
     flex-direction: row;
     justify-content: space-between;
     padding: 0rem 1.3rem;
+
 }
 .Home-header .home-sidebar-container {
     width: 16rem;
@@ -64,19 +65,25 @@
 }
 
 .tasks-inner {
-    padding: 1rem;
+    width: max-content;
+    overflow: scroll;
+    width: inherit;
+    max-height: calc(100vh - 7rem);
+    padding: 0rem;
 }
 .task {
     background-color: rgb(154, 115, 218);
-    margin: 1rem;
-    width: calc(30vw + .4rem);
+    width: calc(20vw + .4rem);
     max-width: 16rem;
-    min-width: max-content;
+    min-width: 12rem;
     padding: .2rem 1.5rem;
     border-radius: 1.5rem;
     text-align: center;
     box-shadow: 2px 2px 4px 1px rgba(0,0,0,0.25); /*OPTIONAL LATER*/
+    display: flex;
+    justify-content: center;
 }
+
 
 .task-top-snurs {
     display: flex;
@@ -92,6 +99,14 @@
     width: 3rem;
     font-size: 1.5rem;
 }
+
+.inner-task-main {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
 .task-top-middle {
     display: flex;
     align-items: center;
@@ -103,23 +118,32 @@
 .task-title,.task-time,.task-content {
     font-size: 1.2rem;
     font-weight: 100;
+    max-width: 16rem;
 }
+
+
+
 .task-comment {
     font-size: 0.9rem;
     color:rgba(187, 187, 187, 0.795);
     font-weight:1000;
     font-style: italic;
+    max-width: 16rem;
+
 }
+.task div {
+    width: 100%;
+}
+
 .task-snurs {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
 }
 
 .inner-task-snurs-tid {
     font-size: 0.6rem;
     color: rgba(255, 255, 255, 0.295);
 }
-
 .task-snurs .inner-task-snurs{
     display: flex;
     justify-content: flex-start;
@@ -139,11 +163,11 @@
 .tasks-bot {
     position: absolute;
     bottom: 0;
-    margin: auto;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
+    
 }
 .inner-bot{
     margin-left: .5rem;
@@ -204,22 +228,104 @@
     display: flex;
     align-items: center;
     justify-content: center;
-
 }
 
+.new-task-wrapper{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+}
+.new-task-nxt-btn {
+    background:none;
+    border-style: solid;
+    border-color: rgba(163, 160, 160, 0); 
+    background-color: rgb(103, 125, 167);
+    width: 2rem;
+    border-width: .1px;
+    color: white;
+    font-size: 1.4rem;
+    border-radius: 50%;
+    height: 2rem;
+    margin-top: .2rem;
+    padding: .7rem .2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.upload-task-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 2rem;
+    width: 100%;
+    font-size: 1.5rem;
+    color: white;
+    background-color: rgb(69, 109, 133);
+    border-bottom-left-radius: 1.5rem;
+    border-bottom-right-radius: 1.5rem;
+    border-style: solid;
+    border-color: rgb(255, 255, 255, 0.5);
+    border-width: .1px;
+    margin-top: 1rem;
+}
+.upload-task-button p {
+    font-size: 1rem;
+    margin: 0;
+    padding: 0;
+}
 .new-task {
-    width: calc(30vw + 3rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     border-radius: 1.5rem;
-    padding: 0.5rem 1rem;
-    overflow-y: scroll;
+    padding: 0rem 0rem;
+    padding-bottom: 1rem;
+    border-top-right-radius: 0;
+    margin-right: 1rem;
+}
+.new-inner-task {
+    background-color: rgb(26, 28, 31); /*custom later */
+    margin: .3rem 0rem;
+    width: 30rem;
+    border-radius: 1.5rem;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: .2rem 0rem;
+}
+
+.n-t-t-h {
+    background-color: rgba(255, 255, 255, 0.205);
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    width: 50%;
+    border-bottom-left-radius: .5rem;
+    border-bottom-right-radius: .5rem;
+    margin-bottom: 1rem;
+    color: black;
+    font-weight: 1000;
+    font-size: 0.7rem;
+}
+
+.new-inner-task p {
+    font-size: 1.2rem;
 }
 .new-task h1 {
     font-size: 1.2rem;
 }
-.new-task p {
-    font-size: 1.3rem;
-    text-align: center;
+
+.task h1 {
+    margin: 0;
 }
+
+
+.new-task-preview {
+    border-radius: 1.5rem;
+    background-color: rgb(26, 28, 31);
+}
+
 
 .time-list {
     display: flex;
@@ -230,7 +336,6 @@
 
 
 .hour-list, .minute-list {
-    max-height: 10rem;
     overflow-y: scroll;
     display: flex;
     flex-direction: column;
@@ -263,8 +368,11 @@
 }
 .newtask-color p{
     width: 15rem;
+    font-size: 1.2rem;
     z-index: 2;
-    margin-bottom: -0.1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    
 }
 .newtask-field-title {
     background: none;
@@ -276,17 +384,22 @@
     text-align: center;
     color: white;
 }
+
+.newtask-form {
+    width: 30rem;
+}
 .newtask-field {
     background: none;
+    background-color: rgba(240, 248, 255, 0.055);
+    max-width: 100%;
     border-style: none;
-    border-style: solid;
-    border-color: white;
+    border-bottom-style: solid;
     border-width: .1px;
     font-size: 1.2rem;
-    text-align: center;
     color: white;
     font-weight: 100;
 }
+
 
 .newtask-field::placeholder, .newtask-field-title::placeholder {
     color: rgba(255, 255, 255, 0.212);
@@ -297,4 +410,10 @@
 .newtask-field {
     height: 10rem;
     width: 100%;
+}
+
+.task-edit-style-container {
+    display: flex;
+    flex-direction: row;
+    z-index: 100;
 }

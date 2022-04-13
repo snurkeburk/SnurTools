@@ -1,4 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap");
 * {
   padding: 0;
   margin: 0;
@@ -66,7 +65,7 @@ body,html {
 .sign-in-btn:hover {
   cursor: pointer;
 }
-
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
 .Home-header {
   background-color: #1a1c22;
   background-repeat: no-repeat;
