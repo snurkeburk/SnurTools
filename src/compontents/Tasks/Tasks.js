@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { authentication, db } from "../../services/firebase-config";
 import "../../styles/Home.css";
-import { motion } from "framer-motion";
+import { animate, AnimatePresence, motion } from "framer-motion";
 import { BsArrowLeftCircle, BsArrowRightCircle } from "react-icons/bs";
 import { months } from "../Lists";
 import Clock from "react-live-clock";
@@ -16,6 +16,8 @@ import {
   RiLayoutRowLine,
   RiFullscreenExitLin,
   RiFullscreenLine,
+  RiDashboardLine,
+  RiCloseFill,
 } from "react-icons/ri";
 import { CgArrowsShrinkH } from "react-icons/cg";
 import {
@@ -35,10 +37,12 @@ import {
   MdRemove,
   MdRemoveCircleOutline,
 } from "react-icons/md";
+import { IoMdRemoveCircle } from "react-icons/io";
 import AddTask from "../AddTask";
 import TasksTop from "./TasksTop";
 import { GetTaskDate, ThemedButton } from "../DatePick";
 import { Collapse } from "react-collapse";
+import { DeleteTask } from "./DeleteTask";
 const Tasks = (e) => {
   const [chosenDay, setChosenDay] = useState("not selected");
   const [fetchedDate, setFetchedDate] = useState("loading date...");
@@ -61,7 +65,7 @@ const Tasks = (e) => {
   const [loadingTasks, setLoadingTasks] = useState(true);
   const [newTask, setNewTask] = useState(false);
   const [AddTaskDisplay, setAddTaskDisplay] = useState("none");
-
+  const [deleteTask, setDeleteTask] = useState(false);
   useEffect(() => {
     getCurrentMonth().then((re) => setChosenDate(re));
     getCurrentDay().then((re) => setChosenDay(re));
@@ -126,9 +130,51 @@ const Tasks = (e) => {
     }
   };
   const variants = {
-    open: { opacity: 1, y: 80 },
-    closed: { opacity: 0, y: -200 },
+    open: { opacity: 1, transition: { duration: 0.2, delay: 0.2 } },
+    closed: { opacity: 0 },
+    slideInTasks: { width: "calc(100% - 81px)", transition: { duration: 0.2 } },
+    slideOutTasks: { width: "100%", transition: { duration: 0.2, delay: 0.2 } },
   };
+
+  const taskVariants = {
+    delete: { scale: 0.1, transition: { duration: 1 } },
+    slideOut: { x: 0, transition: { duration: 0.5 } },
+    green: { backgroundColor: "green" },
+  };
+  function startCompletingTask(state) {
+    if (state == "start") {
+      setDeleteTask((deleteTask) => !deleteTask);
+    }
+    if (state == "stop") {
+      setDeleteTask((deleteTask) => !deleteTask);
+    }
+  }
+
+  /*const draw = {
+    hidden: { pathLength: 0, opacity: 0 },
+    visible: (i) => {
+      const delay = 0;
+      return {
+        pathLength: 1,
+        opacity: 1,
+        transition: {
+          pathLength: { delay, type: "spring", duration: 1.5, bounce: 0 },
+          opacity: { delay, duration: 0.01 },
+        },
+      };
+    },
+  };*/
+  function handleRemove(id) {
+    const newArr = [];
+    for (let i = 0; i < finalTaskList.length; i++) {
+      if (i == id) {
+        // skipping position id
+      } else {
+        newArr.push(...[finalTaskList[i]]);
+      }
+    }
+    setFinalTaskList(newArr);
+  }
   return (
     <div className="Tasks-header">
       <div>
@@ -175,76 +221,78 @@ const Tasks = (e) => {
               className="task-edit-permissions"
               onClick={() => setStyleTasks((styleTasks) => !styleTasks)}
             >
-              <RiLayoutGridFill />
+              <RiDashboardLine />
             </button>
           </div>
         </div>
-        <motion.div className="tasks-main">
-          <motion.div
-            animate={styleTasks ? "open" : "closed"}
-            variants={variants}
-            className="style-task-collapse"
-          >
-            <div className="task-edit-style-container">
-              <button
-                onClick={() =>
-                  handleLayoutChange({ type: "direction", option: "column" })
-                }
-              >
-                <RiLayoutColumnLine />
-              </button>
-              <button
-                onClick={() =>
-                  handleLayoutChange({ type: "direction", option: "row" })
-                }
-              >
-                <RiLayoutRowLine />
-              </button>
-              <button
-                onClick={() =>
-                  handleLayoutChange({ type: "align", option: "center" })
-                }
-              >
-                <RiAlignCenter />
-              </button>
-              <button
-                onClick={() =>
-                  handleLayoutChange({ type: "align", option: "" })
-                }
-              >
-                <RiAlignLeft />
-              </button>
+        <motion.div
+          animate={styleTasks ? "open" : "closed"}
+          variants={variants}
+          className="style-task-collapse"
+        >
+          <div className="task-edit-style-container">
+            <button
+              onClick={() =>
+                handleLayoutChange({ type: "direction", option: "column" })
+              }
+            >
+              <RiLayoutColumnLine />
+            </button>
+            <button
+              onClick={() =>
+                handleLayoutChange({ type: "direction", option: "row" })
+              }
+            >
+              <RiLayoutRowLine />
+            </button>
+            <button
+              onClick={() => handleLayoutChange({ type: "align", option: "" })}
+            >
+              <RiAlignLeft />
+            </button>
+            <button
+              onClick={() =>
+                handleLayoutChange({ type: "align", option: "center" })
+              }
+            >
+              <RiAlignCenter />
+            </button>
 
-              <button
-                onClick={() =>
-                  handleLayoutChange({ type: "wrap", option: "wrap" })
-                }
-              >
-                <FaGripHorizontal />
-              </button>
-              <button
-                onClick={() =>
-                  handleLayoutChange({ type: "wrap", option: "nowrap" })
-                }
-              >
-                <FiMoreHorizontal />
-              </button>
-              <button
-                onClick={() =>
-                  handleLayoutChange({ type: "margin", option: "increase" })
-                }
-              >
-                <MdAddCircleOutline />
-              </button>
-              <button
-                onClick={() =>
-                  handleLayoutChange({ type: "margin", option: "decrease" })
-                }
-              >
-                <MdRemoveCircleOutline />
-              </button>
-            </div>
-          </motion.div>
+            <button
+              onClick={() =>
+                handleLayoutChange({ type: "wrap", option: "wrap" })
+              }
+            >
+              <FaGripHorizontal />
+            </button>
+            <button
+              onClick={() =>
+                handleLayoutChange({ type: "wrap", option: "nowrap" })
+              }
+            >
+              <FiMoreHorizontal />
+            </button>
+            <button
+              onClick={() =>
+                handleLayoutChange({ type: "margin", option: "increase" })
+              }
+            >
+              <MdAddCircleOutline />
+            </button>
+            <button
+              onClick={() =>
+                handleLayoutChange({ type: "margin", option: "decrease" })
+              }
+            >
+              <MdRemoveCircleOutline />
+            </button>
+          </div>
+        </motion.div>
+        <motion.div
+          variants={variants}
+          animate={!styleTasks ? "slideOutTasks" : "slideInTasks"}
+          className="tasks-main"
+        >
           {!loadingTasks ? (
             <div
               className="tasks-inner"
@@ -255,87 +303,127 @@ const Tasks = (e) => {
                 alignItems: taskInnerAlign,
               }}
             >
-              {finalTaskList.length > 0 && !newTask > 0 ? (
-                finalTaskList.map((task, index) => (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.2, delay: 0 }}
-                    className="task"
-                    key={task.tid}
-                    style={{
-                      backgroundColor: task.color,
-                      margin: taskMargin,
-                    }}
-                  >
-                    <motion.div>
-                      <div
-                        className="task-snurs"
-                        style={{ paddingTop: "0.2rem" }}
+              <AnimatePresence>
+                {finalTaskList.length > 0 && !newTask > 0 ? (
+                  finalTaskList.map((task, index) => (
+                    <motion.div
+                      key={index}
+                      transition={{ duration: 0.2, delay: 0 }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      variants={taskVariants}
+                      className="task"
+                      onMouseDown={() => {
+                        startCompletingTask("start");
+                      }}
+                      onMouseUp={() => {
+                        startCompletingTask("stop");
+                      }}
+                      whileHover={{ scale: 1.1 }}
+                      style={{
+                        backgroundColor: task.color,
+                        margin: taskMargin,
+                      }}
+                    >
+                      {/*}  <motion.svg
+                        key={index}
+                        style={{
+                          position: "absolute",
+                          maxWidth: "16rem",
+                          minWidth: "12rem",
+                          width: "inherit",
+                          borderRadius: "1.5rem",
+                        }}
+                        animate={deleteTask ? "visible" : "hidden"}
                       >
-                        <div className="inner-task-snurs">
-                          <img
-                            className="profile-pic"
-                            src={
-                              "https://cdn.discordapp.com/attachments/937167004165615657/960581859568390254/paintcoin.png"
-                            }
-                            style={{
-                              width: "1.5rem",
-                              boxShadow: "2px 2px 4px 1px rgba(0,0,0,0.25)",
-                            }}
-                          />
-                          <h1>{task.snurs}</h1>
-                        </div>
-                        <div className="inner-task-snurs-tid">
-                          <p>{task.tid}</p>
-                        </div>
-                      </div>
-                      <div className="inner-task-main">
-                        <div className="task-top">
-                          <div className="task-top-title">
-                            <h1
-                              className="task-title"
-                              style={
-                                task.content.length > 0
-                                  ? { paddingBottom: "1rem" }
-                                  : {
-                                      display: "flex",
-                                      justifyContent: "space-between",
-                                      paddingTop: "0.5rem",
-                                    }
+                        <motion.rect
+                          width="100%"
+                          height="100%"
+                          rx="20"
+                          stroke="#00cc88"
+                          custom={4}
+                          variants={draw}
+                        ></motion.rect>
+                      </motion.svg> */}
+                      <motion.div className="inner-rect">
+                        <div
+                          className="task-snurs"
+                          style={{ paddingTop: "0.2rem" }}
+                        >
+                          <div className="inner-task-snurs">
+                            <img
+                              className="profile-pic"
+                              src={
+                                "https://cdn.discordapp.com/attachments/937167004165615657/960581859568390254/paintcoin.png"
                               }
+                              style={{
+                                width: "1.5rem",
+                                boxShadow: "2px 2px 4px 1px rgba(0,0,0,0.25)",
+                              }}
+                            />
+                            <h1>{task.snurs}</h1>
+                          </div>
+                          <div className="inner-task-snurs-tid">
+                            <p>{task.tid}</p>
+                            <button
+                              className="delete-task-button"
+                              onClick={() => {
+                                console.log("pressed");
+                                DeleteTask(task.tid);
+                                handleRemove(index);
+                              }}
                             >
-                              {task.title}
-                              <h1 className="task-time">{task.time}</h1>
-                            </h1>
+                              <RiCloseFill />
+                            </button>
                           </div>
                         </div>
-                      </div>
-                      <h1
-                        className="task-content"
-                        style={
-                          task.content.length > 30
-                            ? { textAlign: "left" }
-                            : { textAlign: "center" }
-                        }
-                      >
-                        {task.content}
-                      </h1>
-                      {task.comment.length > 0 ? (
-                        <p className="task-comment">
-                          "{task.comment}" - {task.addedBy}
-                        </p>
-                      ) : (
-                        <div></div>
-                      )}
+                        <div className="inner-task-main">
+                          <div className="task-top">
+                            <div className="task-top-title">
+                              <h1
+                                className="task-title"
+                                style={
+                                  task.content.length > 0
+                                    ? { paddingBottom: "1rem" }
+                                    : {
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        paddingTop: "0.5rem",
+                                      }
+                                }
+                              >
+                                {task.title}
+                                <h1 className="task-time">{task.time}</h1>
+                              </h1>
+                            </div>
+                          </div>
+                        </div>
+                        <h1
+                          className="task-content"
+                          style={
+                            task.content.length > 30
+                              ? { textAlign: "left" }
+                              : { textAlign: "center" }
+                          }
+                        >
+                          {task.content}
+                        </h1>
+                        {task.comment.length > 0 ? (
+                          <p className="task-comment">
+                            "{task.comment}" - {task.addedBy}
+                          </p>
+                        ) : (
+                          <div></div>
+                        )}
+                      </motion.div>
                     </motion.div>
-                  </motion.div>
-                ))
-              ) : (
-                <div>
-                  <h1></h1>
-                </div>
-              )}
+                  ))
+                ) : (
+                  <div>
+                    <h1></h1>
+                  </div>
+                )}
+              </AnimatePresence>
             </div>
           ) : (
             <div>

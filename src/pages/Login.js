@@ -25,9 +25,6 @@ function Login() {
         <button className="sign-in-btn" onClick={signInWithGoogle}>
           Sign in with Google
         </button>
-        <button className="sign-in-btn" onClick={signOutOfGoogle}>
-          Sign out of Google
-        </button>
       </motion.div>
     </header>
   );

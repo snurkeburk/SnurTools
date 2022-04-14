@@ -56,6 +56,7 @@ export const signInWithGoogle = () => {
       console.log(err);
     })
     .finally(() => {
+      window.location.reload(true);
       return true;
     });
 };
