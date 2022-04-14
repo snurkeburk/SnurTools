@@ -47,11 +47,9 @@ body,html {
   justify-content: center;
   z-index: 1;
 }
-
 .App-link {
   color: #61dafb;
 }
-
 .sign-in-btn {
   padding: 0.5rem 1rem;
   background: none;
