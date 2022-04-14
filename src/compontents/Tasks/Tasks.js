@@ -5,9 +5,19 @@ import { motion } from "framer-motion";
 import { BsArrowLeftCircle, BsArrowRightCircle } from "react-icons/bs";
 import { months } from "../Lists";
 import Clock from "react-live-clock";
-
-import { RiLayoutGridFill } from "react-icons/ri";
-
+import { FaGripHorizontal } from "react-icons/fa";
+import { FiMoreHorizontal } from "react-icons/fi";
+import {
+  RiAlignCenter,
+  RiAlignLeft,
+  RiLayoutColumnLine,
+  RiLayoutGridFill,
+  RiLayoutMasonryLine,
+  RiLayoutRowLine,
+  RiFullscreenExitLin,
+  RiFullscreenLine,
+} from "react-icons/ri";
+import { CgArrowsShrinkH } from "react-icons/cg";
 import {
   DatePick,
   switchDay,
@@ -18,10 +28,17 @@ import {
 } from "../DatePick";
 
 import FetchTasks from "../Fetch/FetchTasks";
-import { MdAdd, MdRemove } from "react-icons/md";
+import {
+  MdAdd,
+  MdAddCircleOutline,
+  MdFormatAlignCenter,
+  MdRemove,
+  MdRemoveCircleOutline,
+} from "react-icons/md";
 import AddTask from "../AddTask";
 import TasksTop from "./TasksTop";
 import { GetTaskDate, ThemedButton } from "../DatePick";
+import { Collapse } from "react-collapse";
 const Tasks = (e) => {
   const [chosenDay, setChosenDay] = useState("not selected");
   const [fetchedDate, setFetchedDate] = useState("loading date...");
@@ -31,8 +48,9 @@ const Tasks = (e) => {
   const [taskInnerFlexDirection, setTaskInnerFlexDirection] =
     useState("column");
   const [taskInnerWrap, setTaskInnerWrap] = useState("wrap");
-  const [taskInnerAlign, setTaskInnerAlign] = useState("center");
+  const [taskInnerAlign, setTaskInnerAlign] = useState("flex-start");
   const [taskMargin, setTaskMargin] = useState(15);
+  const [styleTasks, setStyleTasks] = useState(false);
   //? when you press arrow button, call function that replaces date
   //? if button has been pressed, change view
   useEffect(() => {
@@ -47,7 +65,7 @@ const Tasks = (e) => {
   useEffect(() => {
     getCurrentMonth().then((re) => setChosenDate(re));
     getCurrentDay().then((re) => setChosenDay(re));
-    setLoadingTasks(false);
+    handleDateSwitch("default");
   }, []);
 
   function newTastFunction() {
@@ -66,10 +84,9 @@ const Tasks = (e) => {
     setFinalTaskList([]);
     setLoadingTasks(true);
     if (opt == "default") {
-      console.log(e.uid, opt, chosenDay, chosenDate);
       await FetchTasks(e.uid, opt, chosenDay, chosenDate).then((re) => {
+        setFinalTaskList(re);
         setLoadingTasks(false);
-        console.log(re);
       });
     } else {
       switchDay(opt, chosenDay, chosenDate).then((re) => setChosenDay(re));
@@ -108,11 +125,15 @@ const Tasks = (e) => {
         break;
     }
   };
+  const variants = {
+    open: { opacity: 1, y: 80 },
+    closed: { opacity: 0, y: -200 },
+  };
   return (
     <div className="Tasks-header">
       <div>
         <div className="tasks-top">
-          <div>
+          <div className="task-top-time">
             <p className="task-current-time">
               <Clock
                 format={"HH:mm:ss"}
@@ -149,38 +170,49 @@ const Tasks = (e) => {
               <BsArrowRightCircle />
             </button>
           </div>
-          <div>
-            <p className="task-edit-permissions">
+          <div className="task-top-layout">
+            <button
+              className="task-edit-permissions"
+              onClick={() => setStyleTasks((styleTasks) => !styleTasks)}
+            >
               <RiLayoutGridFill />
-            </p>
+            </button>
+          </div>
+        </div>
+        <motion.div className="tasks-main">
+          <motion.div
+            animate={styleTasks ? "open" : "closed"}
+            variants={variants}
+            className="style-task-collapse"
+          >
             <div className="task-edit-style-container">
               <button
                 onClick={() =>
                   handleLayoutChange({ type: "direction", option: "column" })
                 }
               >
-                column
+                <RiLayoutColumnLine />
               </button>
               <button
                 onClick={() =>
                   handleLayoutChange({ type: "direction", option: "row" })
                 }
               >
-                row
+                <RiLayoutRowLine />
               </button>
               <button
                 onClick={() =>
                   handleLayoutChange({ type: "align", option: "center" })
                 }
               >
-                center
+                <RiAlignCenter />
               </button>
               <button
                 onClick={() =>
                   handleLayoutChange({ type: "align", option: "" })
                 }
               >
-                decenter
+                <RiAlignLeft />
               </button>
 
               <button
@@ -188,33 +220,31 @@ const Tasks = (e) => {
                   handleLayoutChange({ type: "wrap", option: "wrap" })
                 }
               >
-                wrap
+                <FaGripHorizontal />
               </button>
               <button
                 onClick={() =>
                   handleLayoutChange({ type: "wrap", option: "nowrap" })
                 }
               >
-                no wrap
+                <FiMoreHorizontal />
               </button>
               <button
                 onClick={() =>
                   handleLayoutChange({ type: "margin", option: "increase" })
                 }
               >
-                margin +
+                <MdAddCircleOutline />
               </button>
               <button
                 onClick={() =>
                   handleLayoutChange({ type: "margin", option: "decrease" })
                 }
               >
-                margin -
+                <MdRemoveCircleOutline />
               </button>
             </div>
-          </div>
-        </div>
-        <motion.div className="tasks-main">
+          </motion.div>
           {!loadingTasks ? (
             <div
               className="tasks-inner"

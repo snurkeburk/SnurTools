@@ -101,13 +101,13 @@ function Sidebar(e) {
           <Collapse isOpened={settings}>
             <Settings />
           </Collapse>
-          <Collapse isOpened={!settings}>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              className="sidebar-main"
-            >
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="sidebar-main"
+          >
+            <Collapse isOpened={!settings}>
               <div className="snurs">
                 <img
                   src={
@@ -199,8 +199,8 @@ function Sidebar(e) {
                   </div>
                 </motion.div>
               </div>
-            </motion.div>
-          </Collapse>
+            </Collapse>
+          </motion.div>
         </div>
       </div>
       <div className="sidebar-buttons-bot">

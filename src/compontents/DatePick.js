@@ -11,9 +11,7 @@ import { authentication, db } from "../services/firebase-config";
 import { days, months, dayNames } from "./Lists";
 import Tasks, { FetchTaskDate, _FetchTasks } from "./Tasks/Tasks";
 function DatePick() {
-  useEffect(() => {
-    console.log("something happened");
-  });
+  useEffect(() => {});
   return (
     <div>
       <h1>fuck you</h1>
@@ -79,13 +77,12 @@ export async function getCurrentMonth() {
 }
 
 export async function GetTaskDate(uid, opt, day, month) {
-  if (day == undefined) {
-    getCurrentDay().then((re) => (day = re));
+  if (day == "not selected") {
+    await getCurrentDay().then((re) => (day = re));
   }
-  if (month == undefined) {
-    getCurrentMonth().then((re) => (month = re));
+  if (month == "loading date...") {
+    await getCurrentMonth().then((re) => (month = re));
   }
-  let _day = day;
   let _month = "";
   if (opt == "increment") {
     day = parseInt(day) + 1;
@@ -97,10 +94,20 @@ export async function GetTaskDate(uid, opt, day, month) {
   if (day < 10) {
     day = "0" + day;
   }
-  for (let i = 0; i < months.length; i++) {
-    if (month == months[i]) {
-      if (i < 10) {
-        _month = "0" + (i + 1);
+  if (parseInt(month)) {
+    if (month < 10) {
+      _month = "0" + month;
+    } else {
+      _month = month;
+    }
+  } else {
+    for (let i = 0; i < months.length; i++) {
+      if (month == months[i]) {
+        if (i < 10) {
+          _month = "0" + (i + 1);
+        } else {
+          _month = i + 1;
+        }
       }
     }
   }
@@ -108,7 +115,7 @@ export async function GetTaskDate(uid, opt, day, month) {
   let string = "2022-" + _month + "-" + day;
   const tasklist = [];
   const taskRef = collection(db, "users", uid, "tasks");
-  if (_day == undefined) {
+  if (day == undefined) {
     // on load, the day will be undefined => go to current day
     let date = new Date();
     let _date = date.toLocaleDateString();

@@ -116,7 +116,7 @@ const Tasks = (e) => {
               <BsArrowRightCircle />
             </button>
           </div>
-          <div>
+          <div className="friend-top-task-right">
             <p className="task-edit-permissions">Edit permissions</p>
           </div>
         </div>

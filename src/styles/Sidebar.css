@@ -13,14 +13,12 @@
     backdrop-filter: blur(0px);
     width: calc(100% + 3rem);
     margin-top: 1.1rem;
-
 }
 .sidebar-main {
     padding: 1rem 2rem;
     border-radius: 1.5rem;
     display: flex;
     flex-direction: column;
-    
 }
 .Sidebar-header .inner-sb{
     display: flex;
@@ -38,7 +36,6 @@
     padding: 0.7rem 0rem;
     border-radius: 1.5rem;
 }
-
 .snurs {
     text-align: left;
     font-size: 0.8em;
@@ -55,7 +52,6 @@
     border-radius: 50%;
     width: 3.5rem;
 }
-
 .username-container {
     display: flex;
     flex-direction: column;
@@ -94,7 +90,6 @@
     width: 100%;
     justify-content: center;
     align-items: center;
-
 }
 .ReactCollapse--collapse {
     transition: height 500ms;
@@ -102,7 +97,7 @@
 .contacts-title, .groups-title {
     width: 100%;
     font-size: 1.4rem;
-    margin: 1rem 0rem;
+    margin: 0rem 0rem;
     margin-top: 4rem;
     display: flex;
     flex-direction: row;
@@ -130,8 +125,13 @@
     transition-duration: 200ms;
     background-color: rgba(255, 255, 255, 0.671);
 }
+.contacts div {
+    width: 100%;
+}
 .contacts {
     width: 100%;
+    height:max-content;
+    max-height: 15rem;
     min-height: 3.5rem;
     margin-top: 0rem;
     display: flex;
@@ -168,7 +168,6 @@
 .contacts-title h2{
     font-size: 1.4rem;
 }
-
 .contacts .friend{
     display:flex;
     border-style: none;
@@ -196,13 +195,11 @@
     background: none;
     color: white;
 }
-
 .contacts .friend p {
     font-size: .8rem;
     color:rgb(150, 150, 150);
     font-weight: 100;
 }
-
 .contacts .friend-inner  h5 {
     font-weight: 100;
 }
@@ -213,10 +210,6 @@
     border-radius: 50%;
     margin-left: 1rem;
 }
-
-
-
-
 .groups {
     width: 100%;
     min-height: 3.5rem;

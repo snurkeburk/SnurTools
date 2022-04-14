@@ -15,15 +15,22 @@
 }
 .Tasks-header {
     width: 100%;
+    
 }
 .tasks-top {
     display: grid;
     grid-template-columns: .5fr 1fr .5fr;
-    background-color: rgba(0, 0, 0, 0.568);
     height: 3rem;
     border-top-left-radius: 1.5rem;
     border-top-right-radius: 1.5rem;
+}
+.task-top-middle, .task-top-time{
+    background-color: rgba(0, 0, 0, 0.568);
     margin-bottom: 1px;
+}
+
+.task-top-time {
+    border-top-left-radius: 1.5rem;
 }
 .tasks-top div {
     display: flex;
@@ -31,16 +38,84 @@
     justify-content: center;
     font-size: 1.5rem;
 }
+.task-top-layout {
+    background-color: rgba(0, 0, 0, 0.568);
+    overflow: visible;
+    margin-bottom: 1px;
+    border-top-right-radius: 1.5rem;
+}
+.task-edit-style-container {
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    height:10rem;
+    width: 5rem;
+    flex-wrap: wrap;
+    z-index: 100;
+    border-style: solid;
+    border-right-style: none;
+    border-radius: .2rem;
+    border-width: .1px;
+    padding:0rem .2rem;
+    border-top-style: none;
+    border-top-left-radius: 0rem;
+    border-bottom-right-radius: 0rem;
+}
 
+.style-task-collapse {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+}
+.task-edit-style-container button:hover{
+    cursor: pointer;
+}
+.task-edit-style-container button {
+    color: white;
+    background: none;
+    border-style: solid;
+    margin: .2rem;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    width: 2rem;
+    height: 2rem;
+    border-color: rgba(240, 248, 255, 0.411);
+    background-color: rgba(2, 2, 2, 0.123)
+}
+.task-edit-permissions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border-style: solid;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    height: 2rem;
+    color: white;
+    border-color: rgba(240, 248, 255, 0.411);
+    background-color: rgba(2, 2, 2, 0.123)
+}
 .tasks-top-left-friend {
     display: flex;
     flex-direction: row;
     width: 100%;
     align-items: center;
     justify-content: space-evenly;
+    background-color: rgba(0, 0, 0, 0.568);
+    margin-bottom: 1px;
+    border-top-left-radius: 1.5rem;
 }
 .tasks-top-left-friend div {
     padding: 0rem 2rem;
+}
+.friend-top-task-right {
+    background-color: rgba(0, 0, 0, 0.568);
+    margin-bottom: 1px;
+    border-top-right-radius: 1.5rem;
 }
 .friend-tasks-back-btn .f-t-b-btn{
     display: flex;
@@ -55,7 +130,6 @@
     font-size: 0.9rem;
     padding: .2rem 1rem;
 }
-
 .tasks-main {
     background-color: rgba(0, 0, 0, 0.568);
     backdrop-filter: blur(0px);
@@ -63,7 +137,6 @@
     border-bottom-left-radius: 1.5rem;
     border-bottom-right-radius: 1.5rem;
 }
-
 .tasks-inner {
     width: max-content;
     overflow: scroll;
@@ -83,15 +156,10 @@
     display: flex;
     justify-content: center;
 }
-
-
 .task-top-snurs {
     display: flex;
     align-items: flex-start;
 }
-
-
-
 .task-date-button {
     background: none;
     border-style: none;
@@ -412,8 +480,3 @@
     width: 100%;
 }
 
-.task-edit-style-container {
-    display: flex;
-    flex-direction: row;
-    z-index: 100;
-}
