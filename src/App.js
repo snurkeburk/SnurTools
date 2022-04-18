@@ -23,26 +23,34 @@ import {
 import Login from "./pages/Login";
 import { AuthUser } from "./compontents/Auth/AuthUser";
 import { FetchProfileInfo } from "./compontents/Fetch/FetchProfile";
+import { HandleUser } from "./compontents/Auth/HandleUser";
+import { getAuth } from "firebase/auth";
+import CreateProfile from "./pages/CreateProfile";
 function App() {
   const [isSignedIn, setIsSignedIn] = useState(false);
+  const [reqUsername, setReqUsername] = useState(false);
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (authentication.currentUser) {
-        console.log("user logged in");
-        setIsSignedIn(true);
+    HandleUser().then((re) => {
+      if (re != "req-username") {
+        setIsSignedIn(re);
+        console.log("ALLOWED");
       } else {
-        console.log("user not logged in");
-        setIsSignedIn(false);
+        setReqUsername(true);
+        console.log("REQ USERNAME");
       }
-    }, 500);
+    });
   });
 
   return (
     <BrowserRouter>
-      {isSignedIn ? (
+      {isSignedIn && !reqUsername ? (
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/:id" element={<Home />} />
+        </Routes>
+      ) : reqUsername ? (
+        <Routes>
+          <Route path="/" element={<CreateProfile />} />
         </Routes>
       ) : (
         <Routes>

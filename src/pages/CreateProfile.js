@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import "../styles/CreateProfile.css";
 import { doc, setDoc } from "firebase/firestore";
 import { signOutOfGoogle } from "../services/firebase-config";
+import { addUserToDatabase } from "../compontents/Auth/HandleUser";
 function CreateProfile() {
   const saveUsername = (event) => {
     event.preventDefault();
@@ -24,7 +25,13 @@ function CreateProfile() {
     };
     await setDoc(doc(db, "users", authentication.currentUser.uid), userData, {
       merge: true,
-    }).then(() => window.location.reload(true));
+    });
+    addUserToDatabase(
+      username,
+      authentication.currentUser.displayName,
+      authentication.currentUser.email,
+      authentication.currentUser.uid
+    ).then(() => window.location.reload(true));
   }
   return (
     <div className="Createprofile-header">
@@ -54,8 +61,11 @@ function CreateProfile() {
             Next
           </motion.button>
         </form>
-        <button className="button signout" onClick={() => signOutOfGoogle()}>
-          <p>press this if things arent working</p>
+        <button
+          className="create-user-backbtn"
+          onClick={() => signOutOfGoogle()}
+        >
+          <p>Go back</p>
         </button>
       </div>
     </div>

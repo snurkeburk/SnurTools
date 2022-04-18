@@ -30,7 +30,7 @@ function AddTask(tid) {
   const [hour, setHour] = useState("12");
   const [minute, setMinute] = useState("00");
   const [Snur, setSnur] = useState("0");
-  const [selectedBg, setSelectedBg] = useState("#006B76");
+  const [selectedBg, setSelectedBg] = useState("rgba(255, 255, 255, 0.242)");
   const [timeHeight, setTimeHeight] = useState("10rem");
   const [titleDone, setTitleDone] = useState(false);
   const [timeDone, setTimeDone] = useState(false);
@@ -295,7 +295,6 @@ function AddTask(tid) {
           setSettingComment(true);
         } else {
           setSettingComment(false);
-          setSelectedBg("rgba(255, 255, 255, 0.242)");
           setCommentDone(true);
           setSettingFinal(true);
         }

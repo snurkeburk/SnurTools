@@ -12,8 +12,10 @@ import {
 } from "firebase/firestore";
 import firebase from "firebase/compat/app";
 import ValidateUser from "../pages/ValidateUser";
-import { Navigate } from "react-router-dom";
-
+import { Navigate, Route, useHistory } from "react-router-dom";
+import Home from "../pages/Home";
+import AuthUser from "../compontents/Auth/AuthUser";
+import Cookies from "js-cookie";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -40,23 +42,26 @@ export function signOutOfGoogle() {
   signOut(auth)
     .then(() => {
       // Sign-out successful.
+      Cookies.remove("uid");
       window.location.reload(true);
     })
     .catch((error) => {
       // An error happened.
     });
 }
+
 export const signInWithGoogle = () => {
   const provider = new GoogleAuthProvider();
   signInWithPopup(authentication, provider)
     .then((re) => {
-      HandleUser(re.user.displayName, re.user.email, re.user.uid);
+      Cookies.set("uid", re.user.uid);
+      HandleUser(re.user.displayName, re.user.email, re.user.uid).then((re) => {
+        if (re) {
+          window.location.reload(re);
+        }
+      });
     })
     .catch((err) => {
-      console.log(err);
-    })
-    .finally(() => {
-      window.location.reload(true);
-      return true;
+      return false;
     });
 };

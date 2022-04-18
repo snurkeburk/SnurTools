@@ -81,7 +81,9 @@ function FriendList() {
               </div>
             ))
           ) : (
-            <div>no friends</div>
+            <div className="no-friends">
+              <p>no friends :(</p>
+            </div>
           )}
         </div>
       )}

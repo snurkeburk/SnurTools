@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { FaSignOutAlt } from "react-icons/fa";
-import { FiSettings } from "react-icons/fi";
+import { FiCopy, FiSettings } from "react-icons/fi";
 import { AiOutlineQuestion } from "react-icons/ai";
-import { MdRemove, MdAdd } from "react-icons/md";
+import { MdRemove, MdAdd, MdOutlineCopyAll } from "react-icons/md";
 import { motion } from "framer-motion";
 import "../styles/Sidebar.css";
 import { authentication, signOutOfGoogle } from "../services/firebase-config";
@@ -24,7 +24,8 @@ function Sidebar(e) {
   const [snurs, setSnurs] = useState([]);
   const [settings, setSettings] = useState(false);
   const [addFriend, setAddFriend] = useState(false);
-
+  const [ownId, setOwnId] = useState("");
+  const [profilePic, setProfilePic] = useState("");
   useEffect(() => {
     FetchProfileInfo(authentication.currentUser.uid);
   });
@@ -36,6 +37,8 @@ function Sidebar(e) {
       setSnurs(docSnap.data().snurs);
       setTag(docSnap.data().tag);
       setUsername(docSnap.data().username);
+      setOwnId(docSnap.data().uid);
+      setProfilePic(docSnap.data().profilePic);
     } else {
       // doc.data() will be undefined in this case
       console.log("No such document!");
@@ -119,19 +122,30 @@ function Sidebar(e) {
                 <p>{snurs}</p>
               </div>
               <div className="profile-container">
-                <img
+                <motion.img
+                  whileHover={{ opacity: "20%" }}
                   className="profile-pic"
-                  src={require("../images/pp.jpg")}
+                  src={profilePic}
                 />
                 <motion.div className="username-container">
-                  <h1 className="username">{username}</h1>
+                  <h1 className="username">
+                    {username}{" "}
+                    <button
+                      className="profile-copy-id"
+                      onClick={() => {
+                        navigator.clipboard.writeText(ownId);
+                      }}
+                    >
+                      <MdOutlineCopyAll />
+                    </button>
+                  </h1>
                   <p className="profile-tag">{tag}</p>
                 </motion.div>
                 <div className="quick-view-todo">
-                  <p className="qvt-p">You have 3 things left to do!</p>
-                  <p>You have completed 1 task today.</p>
+                  <p className="qvt-p">You have X things left to do!</p>
+                  <p>You have completed X task today.</p>
                   <div className="currrent-todo">
-                    <h2>15:30-17:00(now): "Study..."</h2>
+                    <h2>{"{current task}"}</h2>
                   </div>
                 </div>
               </div>
@@ -155,7 +169,9 @@ function Sidebar(e) {
               </div>
               <div className="addfriend-coll" style={{ marginBottom: "1rem" }}>
                 <Collapse isOpened={addFriend}>
-                  <p>Enter friend code:</p>
+                  <p style={{ fontSize: "1.2rem", textAlign: "center" }}>
+                    Enter friend code:
+                  </p>
                   <form
                     className="form-submit-addfriend"
                     onSubmit={addFriendWithCode}
@@ -166,7 +182,7 @@ function Sidebar(e) {
                       type="text"
                       id="username"
                       required
-                      placeholder={"rGPVr7xOargeGOx3TFaFa0dohg92"}
+                      placeholder={"paste the code here!"}
                     ></motion.input>
                     <motion.button
                       onClick={() => addFriendWithCode}

@@ -52,6 +52,11 @@
     border-radius: 50%;
     width: 3.5rem;
 }
+.profile-pic:hover {
+    transition-duration: 200ms;
+    cursor: pointer;
+    filter: opacity(20%);
+}
 .username-container {
     display: flex;
     flex-direction: column;
@@ -203,6 +208,27 @@
 .contacts .friend-inner  h5 {
     font-weight: 100;
 }
+
+.no-friends {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.3rem;
+}
+
+.profile-copy-id {
+    background: none;
+    color: white;
+    border-style: none;
+    border-width: .1px;
+    font-size: 1.2rem;
+}
+.profile-copy-id :hover{
+    transition-duration: 200ms;
+    color: #87a1d4;
+    cursor: pointer;
+}
+
 .friend-pic {
     grid-column: 1;
     width: 2.4rem;

@@ -1,17 +1,7 @@
-import React, { useState } from "react";
-import { authentication } from "../../services/firebase-config";
+import React, { useEffect } from "react";
 
-export async function AuthUser() {
-  console.log("AUTH USER");
-  const [isSignedIn, setIsSignedIn] = useState(false);
-  const timer = setTimeout(() => {
-    if (authentication.currentUser) {
-      console.log("user logged in");
-      setIsSignedIn(true);
-    } else {
-      console.log("user not logged in");
-      setIsSignedIn(false);
-    }
-  }, 500);
-  return true;
+function AuthUser() {
+  return <div>AuthUser</div>;
 }
+
+export default AuthUser;
