@@ -32,8 +32,7 @@ body,html {
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
-  font-family: "Roboto", sans-serif;
-}
+  font-family: "Roboto", sans-serif;}
 
 .login-container{
   background-color: #585f7417;
@@ -76,6 +75,7 @@ body,html {
   font-size: calc(10px + 2vmin);
   color: white;
   font-family: "Roboto", sans-serif;
+
 }
 
 @keyframes App-logo-spin {

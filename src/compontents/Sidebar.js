@@ -2,7 +2,13 @@ import React, { useEffect, useState } from "react";
 import { FaSignOutAlt } from "react-icons/fa";
 import { FiCopy, FiSettings } from "react-icons/fi";
 import { AiOutlineQuestion } from "react-icons/ai";
-import { MdRemove, MdAdd, MdOutlineCopyAll } from "react-icons/md";
+import {
+  MdRemove,
+  MdAdd,
+  MdOutlineCopyAll,
+  MdArrowDownward,
+  MdArrowLeft,
+} from "react-icons/md";
 import { motion } from "framer-motion";
 import "../styles/Sidebar.css";
 import { authentication, signOutOfGoogle } from "../services/firebase-config";
@@ -14,6 +20,8 @@ import { getAuth, signOut } from "firebase/auth";
 import FriendList from "./FriendList";
 import { Collapse } from "react-collapse";
 import Settings from "./Settings";
+import { IoMdArrowBack } from "react-icons/io";
+import defaultProfilePic from "../images/snurtools-defaultpfp.png";
 //https://cdn.discordapp.com/attachments/937167004165615657/960581859245453322/paintcoin.gif
 function Sidebar(e) {
   var user;
@@ -26,6 +34,10 @@ function Sidebar(e) {
   const [addFriend, setAddFriend] = useState(false);
   const [ownId, setOwnId] = useState("");
   const [profilePic, setProfilePic] = useState("");
+  const [editPfp, setEditPfp] = useState(false);
+  const [previewPfp, setPreviewPfp] = useState("");
+  const [backgroundIsChosen, setBackgroundIsChosen] = useState(true);
+  const [seenBgInfo, setSeenBgInfo] = useState(false);
   useEffect(() => {
     FetchProfileInfo(authentication.currentUser.uid);
   });
@@ -33,12 +45,19 @@ function Sidebar(e) {
     const docRef = doc(db, "users", uid);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
+      if (docSnap.data().background == "") {
+        setBackgroundIsChosen(false);
+      }
       setName(docSnap.data().name);
       setSnurs(docSnap.data().snurs);
       setTag(docSnap.data().tag);
       setUsername(docSnap.data().username);
       setOwnId(docSnap.data().uid);
-      setProfilePic(docSnap.data().profilePic);
+      if (docSnap.data().profilePic != "") {
+        setProfilePic(docSnap.data().profilePic);
+      } else {
+        setProfilePic(defaultProfilePic);
+      }
     } else {
       // doc.data() will be undefined in this case
       console.log("No such document!");
@@ -57,7 +76,60 @@ function Sidebar(e) {
     let formDataFid = formData.username;
     addFriendFunction(formDataFid);
   };
-
+  // ------------ CHANGE PROFILE PICTURE  ------------
+  const updatePreviewPic = (event) => {
+    event.preventDefault();
+    console.log(event.target.value);
+    if (
+      event.target.value.indexOf("jpeg") !== -1 ||
+      event.target.value.indexOf("jpg") !== -1 ||
+      event.target.value.indexOf("png") !== -1
+    ) {
+      setPreviewPfp(event.target.value);
+    } else {
+      //! invalid image type, display error.
+      setPreviewPfp("");
+    }
+  };
+  const updateProfilePic = (event) => {
+    event.preventDefault();
+    const elementsArray = [...event.target.elements];
+    const formData = elementsArray.reduce((accumulator, currentValue) => {
+      if (currentValue.id) {
+        accumulator[currentValue.id] = currentValue.value;
+      }
+      return accumulator;
+    }, {});
+    let formDataURL = formData.url;
+    setProfilePic(formDataURL);
+    // check if file is valid url
+    if (
+      formDataURL.indexOf("jpeg") !== -1 ||
+      formDataURL.indexOf("jpg") !== -1 ||
+      formDataURL.indexOf("png") !== -1
+    ) {
+      // valid image
+      updateProfilePicFunction(formDataURL).then(() => {
+        setEditPfp(false);
+      });
+    } else {
+      //! invalid image type, display error.
+    }
+  };
+  async function updateProfilePicFunction(url) {
+    try {
+      const docRef = doc(db, "users", authentication.currentUser.uid);
+      const _doc = await getDoc(docRef);
+      const userData = {
+        profilePic: url,
+      };
+      await setDoc(doc(db, "users", authentication.currentUser.uid), userData, {
+        merge: true,
+      });
+    } catch (e) {
+      console.log("Error uploading profile picture: " + e);
+    }
+  }
   async function addFriendFunction(fid) {
     const docRef = doc(db, "users", authentication.currentUser.uid);
     const docSnap = await getDoc(docRef);
@@ -97,8 +169,107 @@ function Sidebar(e) {
       }
     }
   }
+  const variants = {
+    open: {
+      opacity: 1,
+      display: "",
+      transition: { duration: 0.2, delay: 0.2 },
+    },
+    closed: { opacity: 0, duration: 0.5, display: "none" },
+    exitInfo: { opacity: 0 },
+    showInfo: {
+      x: "5px",
+      transition: {
+        repeat: Infinity,
+        repeatType: "reverse",
+        duration: 1,
+      },
+    },
+  };
   return (
     <div className="sidebar-whole">
+      <motion.div
+        variants={variants}
+        initial={"closed"}
+        animate={editPfp ? "open" : "closed"}
+        className="upload-profilePic-container"
+      >
+        <div className="pfp-preview-container">
+          <motion.img
+            whileHover={{ opacity: "20%" }}
+            className="profile-pic-current"
+            src={profilePic}
+          />
+          <MdArrowDownward />
+
+          {previewPfp != "" ? (
+            <div>
+              <motion.img
+                whileHover={{ opacity: "20%" }}
+                className="profile-pic-current"
+                src={previewPfp}
+              />
+              <p
+                style={{
+                  fontSize: "0.8rem",
+                  color: "white",
+                  marginTop: ".2rem",
+                }}
+              >
+                (selected)
+              </p>
+            </div>
+          ) : (
+            <div>
+              <motion.img
+                whileHover={{ opacity: "20%" }}
+                className="profile-pic-current"
+                src={defaultProfilePic}
+              />
+              <p
+                style={{
+                  fontSize: "0.8rem",
+                  color: "white",
+                  marginTop: ".2rem",
+                }}
+              >
+                (not selected)
+              </p>
+            </div>
+          )}
+        </div>
+        <div className="new-pfp-inner">
+          <p>Enter url here:</p>
+          <form
+            className="form-submit-addfriend"
+            onSubmit={updateProfilePic}
+            autoComplete="off"
+          >
+            <motion.input
+              className="friend-field"
+              type="text"
+              id="url"
+              required
+              placeholder={"Enter URL to image here!"}
+              onChange={updatePreviewPic}
+            ></motion.input>
+            <div className="new-pfp-btn-wrapper">
+              <button
+                className="new-pfp-back-btn"
+                onClick={() => setEditPfp(false)}
+              >
+                <IoMdArrowBack />
+              </button>
+              <motion.button
+                onClick={() => updateProfilePic}
+                className="submit-profile-pic"
+              >
+                <MdAdd />
+              </motion.button>
+            </div>
+          </form>
+        </div>
+      </motion.div>
       <div className="Sidebar-header">
         <div className="inner-sb">
           <Collapse isOpened={settings}>
@@ -124,8 +295,9 @@ function Sidebar(e) {
               <div className="profile-container">
                 <motion.img
                   whileHover={{ opacity: "20%" }}
-                  className="profile-pic"
+                  className="profile-pic-main"
                   src={profilePic}
+                  onClick={() => setEditPfp((editPfp) => !editPfp)}
                 />
                 <motion.div className="username-container">
                   <h1 className="username">
@@ -198,7 +370,9 @@ function Sidebar(e) {
                 <FriendList />
               </div>
               <div className="groups-title">
-                <p>Groups</p>
+                <p>
+                  Groups <p style={{ fontSize: "0.55rem" }}>[coming soontm]</p>
+                </p>
               </div>
               <div className="groups">
                 <motion.div
@@ -219,6 +393,27 @@ function Sidebar(e) {
           </motion.div>
         </div>
       </div>
+      {!backgroundIsChosen ? (
+        <motion.div
+          initial={{ x: "0" }}
+          variants={variants}
+          animate={seenBgInfo ? "exitInfo" : "showInfo"}
+          className="sidebar-settings-alert"
+        >
+          <p>
+            <MdArrowLeft style={{ fontSize: "2rem", marginLeft: "-.5rem" }} />
+            You can change your wallpaper here!{" "}
+            <button
+              className="seen-bg-info-btn"
+              onClick={() => setSeenBgInfo(true)}
+            >
+              got it!
+            </button>
+          </p>
+        </motion.div>
+      ) : (
+        <div></div>
+      )}
       <div className="sidebar-buttons-bot">
         <div>
           <button className="button signout" onClick={() => signOutOfGoogle()}>

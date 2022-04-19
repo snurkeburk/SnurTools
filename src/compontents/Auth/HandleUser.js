@@ -28,10 +28,10 @@ export async function addUserToDatabase(username, name, email, uid) {
   const userData = {
     name: name,
     dateCreated: new Date(),
-    profilePic:
-      "https://icon-library.com/images/default-user-icon/default-user-icon-13.jpg",
+    profilePic: "",
     snurs: 10,
     email: email,
+    background: "",
     tag: "",
     username: username,
     friends: [], //TODO? add tutorial Ederraviel as friend from beginning
@@ -39,6 +39,7 @@ export async function addUserToDatabase(username, name, email, uid) {
     uid: uid,
   };
   await setDoc(doc(db, "users", uid), userData);
+  //TODO: ADD UID TO ID ARRAY IN DB
 }
 
 export async function HandleUser(name, email, uid) {
