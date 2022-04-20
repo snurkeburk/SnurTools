@@ -40,7 +40,7 @@ function FriendList() {
       innerFriendList.push([
         friendSnap.data().username,
         friendSnap.data().status,
-        friendSnap.data().profilepic,
+        friendSnap.data().profilePic,
         friendSnap.data().uid,
       ]);
       if (i == friendlist.length - 1) {
