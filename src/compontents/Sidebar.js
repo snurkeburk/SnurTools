@@ -313,7 +313,7 @@ function Sidebar(e) {
                   </h1>
                   <p className="profile-tag">{tag}</p>
                 </motion.div>
-                <div className="quick-view-todo">
+                <div className="quick-view-todo" style={{ opacity: "70%" }}>
                   <p className="qvt-p">You have X things left to do!</p>
                   <p>You have completed X task today.</p>
                   <div className="currrent-todo">

@@ -73,6 +73,9 @@ export async function HandleUser(name, email, uid) {
     });
   }
   console.log(authed);
+  if (!authed) {
+    window.location.reload(true);
+  }
   return authed;
 }
 

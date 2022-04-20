@@ -22,15 +22,56 @@ h2 {
 
 }
 .s-theme {
-    padding: .2rem .5rem;
 }
-.s-theme .s-theme-inner {
+.s-theme-inner {
     border-radius: .5rem;
     padding: 1rem 2rem;
     margin: 1rem 0rem;
 }
+.s-theme-bg{
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: inherit;
+}
+.new-bg-inner {
+    padding: 2rem 1.5rem;
+    border-style: solid;
+    border-color: rgba(255, 255, 255, 0.651);
+    border-radius: 1.5rem;
+    background-size: cover;
+}
+.bg-field::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: rgb(255, 255, 255);
+    opacity: 1; /* Firefox */
+  }
+.s-theme-tint {
+    opacity: 20%;
 
+}
+.bg-success-msg {
+    font-size: 0.84rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(104, 167, 104);
+    padding: 0.1rem 0.3rem;
+    border-radius: 1.5rem;
+    position: absolute;
+    height: 1.4rem;
+    margin-top: .2rem;
+}
+.s-seen-bg-info-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-style: none;
+    background-color: rgba(240, 248, 255, 0.411);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+}
 .s-theme p {
-    padding: 1rem 0rem;
 }
 

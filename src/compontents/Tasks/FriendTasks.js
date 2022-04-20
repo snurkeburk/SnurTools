@@ -54,8 +54,8 @@ const Tasks = (e) => {
         setAddTaskDisplay("none");
       }, 300);
     } else {
-      setAddTaskDisplay("block");
-      setNewTask(true);
+      //setAddTaskDisplay("block");
+      //setNewTask(true);
     }
   }
 
@@ -228,6 +228,17 @@ const Tasks = (e) => {
           )}
           <div className="tasks-bot">
             <div className="inner-bot">
+              <p
+                style={{
+                  fontSize: "0.8rem",
+                  backgroundColor: "red",
+                  position: "absolute",
+                  bottom: "35px",
+                  opacity: "30%",
+                }}
+              >
+                WORK IN PROGRESS
+              </p>
               <button
                 className="add-task-button"
                 onClick={() => newTastFunction()}

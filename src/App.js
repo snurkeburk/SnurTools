@@ -26,6 +26,7 @@ import { FetchProfileInfo } from "./compontents/Fetch/FetchProfile";
 import { HandleUser } from "./compontents/Auth/HandleUser";
 import { getAuth } from "firebase/auth";
 import CreateProfile from "./pages/CreateProfile";
+import PageNotFound from "./pages/PageNotFound";
 function App() {
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [reqUsername, setReqUsername] = useState(false);
@@ -47,6 +48,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/:id" element={<Home />} />
+          <Route path="*" element={<PageNotFound />} />
         </Routes>
       ) : reqUsername ? (
         <Routes>

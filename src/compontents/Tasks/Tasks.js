@@ -221,7 +221,7 @@ const Tasks = (e) => {
               className="task-edit-permissions"
               onClick={() => setStyleTasks((styleTasks) => !styleTasks)}
             >
-              <RiDashboardLine />
+              <RiDashboardLine style={{ fontSize: "1.5rem" }} />
             </button>
           </div>
         </div>
@@ -352,7 +352,7 @@ const Tasks = (e) => {
                         >
                           <div className="inner-task-snurs">
                             <img
-                              className="profile-pic"
+                              className="snurs-pic"
                               src={
                                 "https://cdn.discordapp.com/attachments/937167004165615657/960581859568390254/paintcoin.png"
                               }

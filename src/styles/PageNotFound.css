@@ -1,0 +1,60 @@
+* {
+    padding: 0;
+    margin: 0;
+    font-family: "Roboto", sans-serif;
+
+}
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
+
+.notFound-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+}
+
+.notFound-inner{
+    background-color: rgb(102, 37, 67);
+    padding: 1rem 2rem;
+    border-radius: 1.5rem;
+    width: 40vw;
+    height: 30vh;
+}
+
+.notFound-container .notFound-inner > .notFound-txt, .notFoundLink {
+    color: white;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: 1.5rem;
+
+}
+.notFound-txt-special {
+    color: rgb(102, 37, 67);
+    font-weight: 1000;
+    font-size: 1.5rem;
+    background-color: aliceblue;
+    border-radius: 1.5rem;
+    width: max-content;
+    padding: 0rem 0.4rem;
+
+}
+.notFound-container .notFound-txt-h1 {
+    padding-bottom: 1rem;
+    color: white;
+    font-size: 2.5rem;
+}
+.notFoundLink {
+    padding-top: 1rem;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+.notFound-link {
+    text-align: center;
+    margin-top: -2rem;
+    color: rgba(255, 255, 255, 0.418);
+}
