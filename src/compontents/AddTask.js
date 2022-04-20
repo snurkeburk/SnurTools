@@ -527,7 +527,7 @@ function AddTask(tid) {
                         }}
                       >
                         <img
-                          className="profile-pic"
+                          className="snurs-pic"
                           src={
                             "https://cdn.discordapp.com/attachments/937167004165615657/960581859568390254/paintcoin.png"
                           }
@@ -563,7 +563,7 @@ function AddTask(tid) {
                         }}
                       >
                         <img
-                          className="profile-pic"
+                          className="snurs-pic"
                           src={
                             "https://cdn.discordapp.com/attachments/937167004165615657/960581859568390254/paintcoin.png"
                           }
@@ -658,7 +658,7 @@ function AddTask(tid) {
                   <div className="task-snurs" style={{ paddingTop: "0.2rem" }}>
                     <div className="inner-task-snurs">
                       <img
-                        className="profile-pic"
+                        className="snurs-pic"
                         src={
                           "https://cdn.discordapp.com/attachments/937167004165615657/960581859568390254/paintcoin.png"
                         }
