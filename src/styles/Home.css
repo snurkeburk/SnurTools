@@ -284,6 +284,11 @@ rect
     cursor: pointer;
 }
 
+.new-task-close:hover {
+    background-color: rgba(240, 248, 255, 0.199);
+    transition: 200ms;
+    cursor: pointer;
+}
 .add-task-button {
     width: 3rem;
     height: 3rem;

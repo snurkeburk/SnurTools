@@ -23,9 +23,28 @@ export async function getCurrentDate() {
   let date = new Date();
   let _date = date.toLocaleDateString();
   let _time = date.toLocaleTimeString();
-  let time = _time.split(":")[0] + ":" + _time.split(":")[1];
-  let month = _date.split("-")[1];
-  let day = _date.split("-")[2];
+  let time;
+  let month;
+  let day;
+  time = _time.split(":")[0] + ":" + _time.split(":")[1];
+  if (_date.includes("-")) {
+    //standard date
+    month = _date.split("-")[1];
+    day = _date.split("-")[2];
+  }
+  if (_date.includes("/")) {
+    console.log("/");
+    //gotta reverse the string
+    //? is year in last pos
+    if (_date.split("/")[2].length == 4) {
+      month = _date.split("/")[1];
+      day = _date.split("/")[0];
+    } else {
+      month = _date.split("/")[1];
+      day = _date.split("/")[2];
+    }
+  }
+
   if (month.includes("0")) {
     month = month.split("0")[1];
   }
@@ -48,40 +67,86 @@ export async function getCurrentDate() {
     }
   }
 }
-export async function getCurrentDay() {
+export async function reverseDate() {
   let date = new Date();
   let _date = date.toLocaleDateString();
-  let _time = date.toLocaleTimeString();
-  let time = _time.split(":")[0] + ":" + _time.split(":")[1];
-  let month = _date.split("-")[1];
-  let day = _date.split("-")[2];
-  if (month.includes("0")) {
-    month = month.split("0")[1];
+  let day;
+  let month;
+  let year;
+  if (_date.includes("-")) {
+    //standard date
+    year = _date.split("-")[0];
+    month = _date.split("-")[1];
+    day = _date.split("-")[2];
   }
-  if (day[0] == 0) {
-    day = day.split("0")[1];
+  if (_date.includes("/")) {
+    //gotta reverse the string
+    //? is year in last pos
+    if (_date.split("/")[2].length == 4) {
+      year = _date.split("/")[2];
+      month = _date.split("/")[1];
+      day = _date.split("/")[0];
+    } else {
+      year = _date.split("/")[0];
+      day = _date.split("/")[2];
+      month = _date.split("/")[1];
+    }
   }
-  return day;
+  console.log(year + "-" + month + "-" + day);
+  let final = year + "-" + month + "-" + day;
+  return final;
+}
+export async function getCurrentDayAndMonth(opt) {
+  let date = new Date();
+  let _date = date.toLocaleDateString();
+  let day;
+  let month;
+  let year;
+  if (_date.includes("-")) {
+    //standard date
+    year = _date.split("-")[0];
+    month = _date.split("-")[1];
+    day = _date.split("-")[2];
+  }
+  if (_date.includes("/")) {
+    //gotta reverse the string
+    //? is year in last pos
+    if (_date.split("/")[2].length == 4) {
+      year = _date.split("/")[2];
+      month = _date.split("/")[1];
+      day = _date.split("/")[0];
+    } else {
+      year = _date.split("/")[0];
+      day = _date.split("/")[2];
+      month = _date.split("/")[1];
+    }
+  }
+  let final;
+  if (opt == "day") {
+    final = day;
+  }
+  if (opt == "month") {
+    final = month;
+  }
+  if (opt == "date") {
+    final = year + "-" + month + "-" + day;
+  }
+  return final;
 }
 export async function getCurrentMonth() {
-  let date = new Date();
-  let _date = date.toLocaleDateString();
-  let _time = date.toLocaleTimeString();
-  let time = _time.split(":")[0] + ":" + _time.split(":")[1];
-  let month = _date.split("-")[1];
-  if (month.includes("0")) {
-    month = month.split("0")[1];
-  }
-
-  return month;
+  reverseDate().then((re) => {
+    console.log(re);
+    let month = re.split("-")[1];
+    return month;
+  });
 }
 
 export async function GetTaskDate(uid, opt, day, month) {
   if (day == "not selected") {
-    await getCurrentDay().then((re) => (day = re));
+    await getCurrentDayAndMonth("day").then((re) => (day = re));
   }
   if (month == "loading date...") {
-    await getCurrentMonth().then((re) => (month = re));
+    await getCurrentDayAndMonth("month").then((re) => (month = re));
   }
   let _month = "";
   if (opt == "increment") {
@@ -95,10 +160,8 @@ export async function GetTaskDate(uid, opt, day, month) {
     day = "0" + day;
   }
   if (parseInt(month)) {
-    if (month < 10) {
-      _month = "0" + month;
-    } else {
-      _month = month;
+    if (parseInt(month) < 10) {
+      _month = "0" + parseInt(month);
     }
   } else {
     for (let i = 0; i < months.length; i++) {
@@ -111,14 +174,18 @@ export async function GetTaskDate(uid, opt, day, month) {
       }
     }
   }
-
   let string = "2022-" + _month + "-" + day;
+
   const tasklist = [];
   const taskRef = collection(db, "users", uid, "tasks");
   if (day == undefined) {
+    //! I dont think this is needed anymore, but i'll keep for a while in case
     // on load, the day will be undefined => go to current day
     let date = new Date();
-    let _date = date.toLocaleDateString();
+    let _date;
+    getCurrentDayAndMonth("date").then((re) => {
+      _date = re;
+    });
     const q = query(
       taskRef,
       where("date", "==", _date)
@@ -131,11 +198,7 @@ export async function GetTaskDate(uid, opt, day, month) {
     });
   } else {
     // if user switches day
-    const q = query(
-      taskRef,
-      where("date", "==", string)
-      //! REPLACE WITH DATE ON SELECTED PAGE HERE
-    );
+    const q = query(taskRef, where("date", "==", string));
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((_doc) => {
       // doc.data() is never undefined for query doc snapshots
@@ -148,6 +211,7 @@ export async function GetTaskDate(uid, opt, day, month) {
     const _doc = await getDoc(docRef);
     innerTasklist.push(...[_doc.data()]);
   }
+  console.log(innerTasklist);
   return innerTasklist;
 }
 

@@ -13,6 +13,7 @@ import {
   getCurrentDay,
   getCurrentDate,
   getCurrentMonth,
+  getCurrentDayAndMonth,
 } from "../DatePick";
 
 import FetchTasks from "../Fetch/FetchTasks";
@@ -42,8 +43,8 @@ const Tasks = (e) => {
   // Function to convert from username to user id
 
   useEffect(() => {
-    getCurrentMonth().then((re) => setChosenDate(re));
-    getCurrentDay().then((re) => setChosenDay(re));
+    getCurrentDayAndMonth("month").then((re) => setChosenDate(re));
+    getCurrentDayAndMonth("day").then((re) => setChosenDay(re));
     setLoadingTasks(false);
   }, []);
 

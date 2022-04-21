@@ -27,12 +27,14 @@ import {
   getCurrentDay,
   getCurrentDate,
   getCurrentMonth,
+  getCurrentDayAndMonth,
 } from "../DatePick";
 
 import FetchTasks from "../Fetch/FetchTasks";
 import {
   MdAdd,
   MdAddCircleOutline,
+  MdClose,
   MdFormatAlignCenter,
   MdRemove,
   MdRemoveCircleOutline,
@@ -67,8 +69,8 @@ const Tasks = (e) => {
   const [AddTaskDisplay, setAddTaskDisplay] = useState("none");
   const [deleteTask, setDeleteTask] = useState(false);
   useEffect(() => {
-    getCurrentMonth().then((re) => setChosenDate(re));
-    getCurrentDay().then((re) => setChosenDay(re));
+    getCurrentDayAndMonth("month").then((re) => setChosenDate(re));
+    getCurrentDayAndMonth("day").then((re) => setChosenDay(re));
     handleDateSwitch("default");
   }, []);
 

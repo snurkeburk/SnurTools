@@ -9,7 +9,8 @@ import { CirclePicker } from "react-color";
 import { Collapse } from "react-collapse";
 import { arrayRemove, doc, setDoc } from "firebase/firestore";
 import { useParams } from "react-router-dom";
-import { MdExpandMore } from "react-icons/md";
+import { MdClose, MdExpandMore } from "react-icons/md";
+import { getCurrentDayAndMonth } from "./DatePick";
 function AddTask(tid) {
   const [selectedTimeZone, setSelectedTimezone] = useState([]);
   const [currentUsername, setCurrentUsername] = useState([]);
@@ -209,41 +210,41 @@ function AddTask(tid) {
     const timer = setTimeout(() => {
       menuSwitch("reset");
     }, 1000);
-    let date = new Date();
-    let _date = date.toLocaleDateString();
-    let _time = date.toLocaleTimeString();
-    let time = _time.split(":")[0] + ":" + _time.split(":")[1];
-    let uniqueTid = makeid(5);
-    console.log(_date);
-    setGlobTime(time);
-    const data = {
-      addedBy: currentUsername,
-      title: title,
-      time: hour + ":" + minute,
-      content: content,
-      taskOwners: [authentication.currentUser.uid],
-      type: "task",
-      snurs: Snur,
-      comment: comment,
-      completed: false,
-      color: selectedBg,
-      date: _date,
-      timeAdded: time,
-      tid: _date + "$" + hour + ":" + minute + "$" + uniqueTid,
-    };
-
-    await setDoc(
+    getCurrentDayAndMonth("date").then((re) => {
+      let date = new Date();
+      let time = date.toLocaleTimeString();
+      let _date = re;
+      let uniqueTid = makeid(5);
+      setGlobTime(time);
+      const data = {
+        addedBy: currentUsername,
+        title: title,
+        time: hour + ":" + minute,
+        content: content,
+        taskOwners: [authentication.currentUser.uid],
+        type: "task",
+        snurs: Snur,
+        comment: comment,
+        completed: false,
+        color: selectedBg,
+        date: _date,
+        timeAdded: time,
+        tid: _date + "$" + hour + ":" + minute + "$" + uniqueTid,
+      };
+      console.log(_date + "$" + hour + ":" + minute + "$" + uniqueTid);
+      /* await setDoc(
       doc(
         db,
         "users",
         authentication.currentUser.uid,
         "tasks",
         _date + "$" + hour + ":" + minute + "$" + uniqueTid
-      ),
-      data
-    );
-    setSettingFinal(false);
-    setSettingColor(false);
+        ),
+        data
+        );*/
+      setSettingFinal(false);
+      setSettingColor(false);
+    });
   }
 
   function menuSwitch(current) {
