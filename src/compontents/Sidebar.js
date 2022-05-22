@@ -22,6 +22,7 @@ import { Collapse } from "react-collapse";
 import Settings from "./Settings";
 import { IoMdArrowBack } from "react-icons/io";
 import defaultProfilePic from "../images/snurtools-defaultpfp.png";
+import { FetchProfileId } from "./Fetch/FetchProfileId";
 //https://cdn.discordapp.com/attachments/937167004165615657/960581859245453322/paintcoin.gif
 function Sidebar(e) {
   var user;
@@ -38,8 +39,17 @@ function Sidebar(e) {
   const [previewPfp, setPreviewPfp] = useState("");
   const [backgroundIsChosen, setBackgroundIsChosen] = useState(true);
   const [seenBgInfo, setSeenBgInfo] = useState(false);
+  const [viewingOtherProfile, setViewingOtherProfile] = useState(false);
   useEffect(() => {
-    FetchProfileInfo(authentication.currentUser.uid);
+    if (e.uid) {
+      console.log("e.uid", e.uid);
+      FetchProfileId(e.uid).then((re) => {
+        FetchProfileInfo(re);
+      });
+      setViewingOtherProfile(true);
+    } else {
+      FetchProfileInfo(authentication.currentUser.uid);
+    }
   });
   async function FetchProfileInfo(uid) {
     const docRef = doc(db, "users", uid);
@@ -297,7 +307,15 @@ function Sidebar(e) {
                   whileHover={{ opacity: "20%" }}
                   className="profile-pic-main"
                   src={profilePic}
-                  onClick={() => setEditPfp((editPfp) => !editPfp)}
+                  onClick={() => {
+                    if (!viewingOtherProfile) {
+                      setEditPfp((editPfp) => !editPfp);
+                    } else {
+                      alert(
+                        "Home button is top right, and no, i couldn't be bothered making an actual error message. i'll do it some other time ty"
+                      );
+                    }
+                  }}
                 />
                 <motion.div className="username-container">
                   <h1 className="username">
@@ -314,8 +332,19 @@ function Sidebar(e) {
                   <p className="profile-tag">{tag}</p>
                 </motion.div>
                 <div className="quick-view-todo" style={{ opacity: "70%" }}>
-                  <p className="qvt-p">You have X things left to do!</p>
-                  <p>You have completed X task today.</p>
+                  {viewingOtherProfile ? (
+                    <div style={{ textAlign: "center" }}>
+                      <p className="qvt-p">
+                        {e.uid} has X thing(s) left to do!
+                      </p>
+                      <p>They have completed X task(s) today.</p>
+                    </div>
+                  ) : (
+                    <div style={{ textAlign: "center" }}>
+                      <p className="qvt-p">You have X thing(s) left to do!</p>
+                      <p>You have completed X task(s) today.</p>
+                    </div>
+                  )}
                   <div className="currrent-todo">
                     <h2>{"{current task}"}</h2>
                   </div>

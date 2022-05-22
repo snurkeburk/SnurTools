@@ -3,12 +3,14 @@
     flex-direction: row;
     justify-content: space-between;
     padding: 0rem 1.3rem;
-
+    overflow-y: hidden;
+    overflow-x: hidden;
 }
 .Home-header .home-sidebar-container {
     width: 16rem;
 }
 .Home-header .home-tasks-container {
+    margin: 0;
     width: 100%;
     margin-left: 4rem;
 
@@ -339,6 +341,10 @@ rect
     display: flex;
     align-items: center;
     justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, 0);
 }
 
 .new-task-wrapper{
@@ -394,6 +400,7 @@ rect
     padding-bottom: 1rem;
     border-top-right-radius: 0;
     margin-right: 1rem;
+
 }
 .new-inner-task {
     background-color: rgba(26, 28, 31, 0.562); /*custom later */

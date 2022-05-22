@@ -9,9 +9,10 @@ import { CirclePicker } from "react-color";
 import { Collapse } from "react-collapse";
 import { arrayRemove, doc, setDoc } from "firebase/firestore";
 import { useParams } from "react-router-dom";
-import { MdClose, MdExpandMore } from "react-icons/md";
+import { MdClose, MdExpandMore, MdWeekend } from "react-icons/md";
 import { getCurrentDayAndMonth } from "./DatePick";
-function AddTask(tid) {
+import TaskDay from "./Tasks/TaskDay";
+function AddTask(taskInfo) {
   const [selectedTimeZone, setSelectedTimezone] = useState([]);
   const [currentUsername, setCurrentUsername] = useState([]);
   const [selectedSnur, setSelectedSnur] = useState("0");
@@ -39,8 +40,10 @@ function AddTask(tid) {
   const [snursDone, setSnursDone] = useState(false);
   const [commentDone, setCommentDone] = useState(false);
   const [previewVisibility, setPreviewVisibility] = useState("block");
+  const [finDate, setFinDate] = useState("");
+  const [chosenDay, setChosenDay] = useState("");
+  const id = useParams().id;
   let hoursAM = ["1", "2", "3"];
-  const { id } = useParams();
   let snurs = ["1", "2", "3", "4", "5", "6", "7"];
   let hours = [
     "00",
@@ -134,6 +137,32 @@ function AddTask(tid) {
   //TODO... if cookie exists. Otherwise use MY defaults
   //TODO remove all created cookies on "upload"
   useEffect(() => {
+    switch (taskInfo.day) {
+      case "monday":
+        setChosenDay("1");
+        break;
+      case "tuesday":
+        setChosenDay("2");
+        break;
+      case "wednesday":
+        setChosenDay("3");
+        break;
+      case "thursday":
+        setChosenDay("4");
+        break;
+      case "friday":
+        setChosenDay("5");
+        break;
+      case "saturday":
+        setChosenDay("6");
+        break;
+      case "sunday":
+        setChosenDay("7");
+        break;
+      default:
+        setChosenDay("0");
+        break;
+    }
     FetchProfileInfo(authentication.currentUser.uid).then((re) =>
       setSelectedTimezone(re.split("$")[0])
     );
@@ -210,41 +239,49 @@ function AddTask(tid) {
     const timer = setTimeout(() => {
       menuSwitch("reset");
     }, 1000);
-    getCurrentDayAndMonth("date").then((re) => {
-      let date = new Date();
-      let time = date.toLocaleTimeString();
-      let _date = re;
-      let uniqueTid = makeid(5);
+    let _date;
+    let date = new Date();
+    let time = date.toLocaleTimeString();
+    let uniqueTid = makeid(5);
+    await getCurrentDayAndMonth("date").then((re) => {
+      setFinDate(re);
+      console.log(finDate);
       setGlobTime(time);
       const data = {
         addedBy: currentUsername,
         title: title,
         time: hour + ":" + minute,
         content: content,
-        taskOwners: [authentication.currentUser.uid],
+        taskOwners: taskInfo.id,
         type: "task",
         snurs: Snur,
         comment: comment,
         completed: false,
         color: selectedBg,
-        date: _date,
+        date: re,
         timeAdded: time,
-        tid: _date + "$" + hour + ":" + minute + "$" + uniqueTid,
+        tid: re + "$" + hour + ":" + minute + "$" + uniqueTid,
+        day: taskInfo.day,
       };
-      console.log(_date + "$" + hour + ":" + minute + "$" + uniqueTid);
-      /* await setDoc(
+      FinalUpload(data, re, uniqueTid);
+    });
+  }
+
+  async function FinalUpload(data, re, uniqueTid) {
+    await setDoc(
       doc(
         db,
         "users",
-        authentication.currentUser.uid,
+        taskInfo.id,
         "tasks",
-        _date + "$" + hour + ":" + minute + "$" + uniqueTid
-        ),
-        data
-        );*/
-      setSettingFinal(false);
-      setSettingColor(false);
-    });
+        taskInfo.week.toString(),
+        chosenDay,
+        re + "$" + hour + ":" + minute + "$" + uniqueTid
+      ),
+      data
+    );
+    setSettingFinal(false);
+    setSettingColor(false);
   }
 
   function menuSwitch(current) {

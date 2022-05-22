@@ -17,7 +17,7 @@ import {
   getDocs,
   getDoc,
 } from "firebase/firestore";
-import { getCurrentDayAndMonth, GetTaskDate } from "../DatePick";
+import { GetTaskDate } from "../DatePick";
 async function FetchTasks(uid, opt, day, month) {
   let s = [];
   await GetTaskDate(uid, opt, day, month).then((re) => {
@@ -26,7 +26,6 @@ async function FetchTasks(uid, opt, day, month) {
       s.push(...[element]);
     });
   });
-  console.log(s);
   return s;
 }
 export default FetchTasks;

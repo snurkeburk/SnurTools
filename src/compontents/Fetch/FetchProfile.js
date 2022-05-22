@@ -16,6 +16,7 @@ import {
 } from "firebase/firestore";
 
 export async function FetchProfileInfo(uid) {
+  console.log("UID: " + uid);
   const docRef = doc(db, "users", uid);
   const docSnap = await getDoc(docRef);
 

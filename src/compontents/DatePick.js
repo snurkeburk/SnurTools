@@ -45,9 +45,6 @@ export async function getCurrentDate() {
     }
   }
 
-  if (month.includes("0")) {
-    month = month.split("0")[1];
-  }
   if (day[0] == "0") {
     day = day.split("0")[1];
   }
@@ -198,6 +195,7 @@ export async function GetTaskDate(uid, opt, day, month) {
     });
   } else {
     // if user switches day
+    console.log("where ===" + string + " in " + uid);
     const q = query(taskRef, where("date", "==", string));
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((_doc) => {

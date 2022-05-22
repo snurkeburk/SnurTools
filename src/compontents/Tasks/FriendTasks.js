@@ -31,11 +31,6 @@ const Tasks = (e) => {
   const [fid, setFid] = useState("");
   // when you press arrow button, call function that replaces date
   // if button has been pressed, change view
-  useEffect(() => {
-    getCurrentFriendId(e.username).then((re) => setFid(re[0])); //=> sets friend id
-    getCurrentDate().then((re) => setFetchedDate(re));
-    setChosenDate(fetchedDate.split(" ")[1]);
-  });
   const [finalTaskList, setFinalTaskList] = useState([]);
   const [loadingTasks, setLoadingTasks] = useState(true);
   const [newTask, setNewTask] = useState(false);
@@ -43,9 +38,14 @@ const Tasks = (e) => {
   // Function to convert from username to user id
 
   useEffect(() => {
+    getCurrentFriendId(e.username).then((re) => setFid(re[0])); //=> sets friend id
+    getCurrentDate().then((re) => setFetchedDate(re));
+    setChosenDate(fetchedDate.split(" ")[1]);
+  });
+  useEffect(() => {
     getCurrentDayAndMonth("month").then((re) => setChosenDate(re));
     getCurrentDayAndMonth("day").then((re) => setChosenDay(re));
-    setLoadingTasks(false);
+    handleDateSwitch("default");
   }, []);
 
   function newTastFunction() {
@@ -63,11 +63,17 @@ const Tasks = (e) => {
   async function handleDateSwitch(opt) {
     setLoadingTasks(true);
     setFinalTaskList([]);
-    switchDay(opt, chosenDay, chosenDate).then((re) => setChosenDay(re));
-    await FetchTasks(fid, opt, chosenDay, chosenDate).then((re) => {
-      setFinalTaskList(re);
-      setLoadingTasks(false);
-    });
+    if (opt == "default") {
+      await FetchTasks(fid, opt, chosenDay, chosenDate).then((re) => {
+        setFinalTaskList(re);
+      });
+    } else {
+      switchDay(opt, chosenDay, chosenDate).then((re) => setChosenDay(re));
+      await FetchTasks(fid, opt, chosenDay, chosenDate).then((re) => {
+        setFinalTaskList(re);
+      });
+    }
+    setLoadingTasks(false);
   }
 
   return (

@@ -17,6 +17,7 @@ import {
 import TestPage from "./TestPage";
 import { getCurrentFriendId } from "../compontents/Auth/HandleUser";
 import { doc, getDoc } from "firebase/firestore";
+import UserTasks from "./UserTasks";
 function Home() {
   const [background, setBackground] = useState("");
   const [fid, setFid] = useState("");
@@ -58,7 +59,7 @@ function Home() {
           <Sidebar />
         </div>
         <div className="home-tasks-container">
-          <Tasks uid={authentication.currentUser.uid} />
+          <UserTasks uid={authentication.currentUser.uid} />
         </div>
       </div>
     );
@@ -70,10 +71,10 @@ function Home() {
       >
         <div className="home-sidebar-container">
           {" "}
-          <Sidebar />
+          <Sidebar uid={id} />
         </div>
         <div className="home-tasks-container">
-          <FriendTasks username={id} />
+          <UserTasks uid={id} />
         </div>
       </div>
     );

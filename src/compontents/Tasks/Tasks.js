@@ -432,7 +432,6 @@ const Tasks = (e) => {
               <p>Loading tasks...</p>
             </div>
           )}
-
           {newTask ? (
             <motion.div
               className="new-task-outer-container"

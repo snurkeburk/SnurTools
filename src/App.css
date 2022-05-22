@@ -4,6 +4,8 @@
 }
 body,html {
   background-color: #1a1c22;
+  overflow-y: hidden;
+  overflow-x: hidden;
 }
 .App {
   text-align: center;

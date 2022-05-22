@@ -1,0 +1,137 @@
+* { 
+    padding: 0;
+    margin: 0;
+}
+.UserTasks-container {
+    position: relative;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+
+.tasks-main {
+    background-color: rgba(255, 255, 255, 0);
+}
+
+.task {
+    margin: 1rem;
+}
+.bfd-button:hover {
+    cursor: pointer;
+}
+.week-task-s {
+    margin-top: -1rem;
+    margin-right: -11rem;
+    display: flex;
+}
+.bfd-button {
+    background-color: #ffffff00;
+    color: white;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-style: none;
+    text-decoration: underline;
+    text-underline-offset: 0.2rem;
+    border-width: 0.1px;
+    font-size: 1.3rem;
+    margin-right: 1rem;
+    font-family: "Roboto", sans-serif;
+}
+.rtp-link{
+    color: white;
+    text-decoration: underline;
+    text-underline-offset: 0.1rem;
+    font-size: 1.4rem;
+}
+.task-top-right{
+    display: flex;
+}
+.task-week-addedby{
+    font-size: 13px;
+    margin-top: 0.8rem;
+    color:rgba(255, 255, 255, 0.801);
+    font-weight: 500;
+}
+.task-day-container {
+    position: relative;
+    background-color: rgba(0, 0, 0, 0.452);
+    width: 100%;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+.task-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: .5rem;
+    margin: 10px;
+    padding: 10px;
+    width: 100%;
+    height: auto;
+    color: white;
+    font-size: 0.9rem;
+}
+.mon,
+.tue,
+.wed,
+.thu,
+.fri,
+.sat,
+.sun{
+    margin: 0 0px;
+    border-style: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items:  center;
+    background:none ;
+    background-color: rgba(0, 0, 0, 0.452);
+    width: 100%;
+}
+
+
+.mon > p,
+.tue > p,
+.wed > p,
+.thu > p,
+.fri > p,
+.sat > p,
+.sun> p {
+    font-size: 1.2rem;
+    font-weight: 100;
+    color: white;
+}
+
+.task-top-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.452);
+    margin-bottom: 1px;
+    height: 3rem;
+    border-top-left-radius: 2rem;
+    border-top-right-radius: 2rem;
+}
+
+.task-top-mid {
+    display: flex;
+}
+
+.task-top-left{
+    margin-left: 3rem;
+}
+
+.task-top-right{
+    margin-right: 3rem;
+}
+
+.tasks-bot {
+    margin-bottom: 1rem;
+    z-index: 5000;
+}
