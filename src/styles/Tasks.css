@@ -24,7 +24,7 @@
 }
 .week-task-s {
     margin-top: -1rem;
-    margin-right: -11rem;
+    margin-right: -100%;
     display: flex;
 }
 .bfd-button {
@@ -61,6 +61,8 @@
     width: 100%;
     overflow-y: hidden;
     overflow-x: hidden;
+    border-bottom-left-radius: 2rem;
+    border-bottom-right-radius: 2rem;
 }
 .task-container{
     display: flex;
@@ -106,6 +108,12 @@
     color: white;
 }
 
+.mon {
+    border-bottom-left-radius: 2rem;
+}
+.sun {
+    border-bottom-right-radius: 2rem;
+}
 .task-top-container{
     display: flex;
     flex-direction: row;

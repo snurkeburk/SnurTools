@@ -244,16 +244,6 @@ function UserTasks(id) {
                       >
                         <div>{task.title}</div>
                         <div className="week-task-s">
-                          <img
-                            className="snurs-pic"
-                            src={
-                              "https://cdn.discordapp.com/attachments/937167004165615657/960581859568390254/paintcoin.png"
-                            }
-                            style={{
-                              width: "1rem",
-                              boxShadow: "2px 2px 4px 1px rgba(0,0,0,0.25)",
-                            }}
-                          />
                           <p>{task.snurs}</p>
                         </div>
                         <div>{task.time}</div>
@@ -296,16 +286,6 @@ function UserTasks(id) {
                       >
                         <div>{task.title}</div>
                         <div className="week-task-s">
-                          <img
-                            className="snurs-pic"
-                            src={
-                              "https://cdn.discordapp.com/attachments/937167004165615657/960581859568390254/paintcoin.png"
-                            }
-                            style={{
-                              width: "1rem",
-                              boxShadow: "2px 2px 4px 1px rgba(0,0,0,0.25)",
-                            }}
-                          />
                           <p>{task.snurs}</p>
                         </div>
                         <div>{task.time}</div>
@@ -348,16 +328,6 @@ function UserTasks(id) {
                       >
                         <div>{task.title}</div>
                         <div className="week-task-s">
-                          <img
-                            className="snurs-pic"
-                            src={
-                              "https://cdn.discordapp.com/attachments/937167004165615657/960581859568390254/paintcoin.png"
-                            }
-                            style={{
-                              width: "1rem",
-                              boxShadow: "2px 2px 4px 1px rgba(0,0,0,0.25)",
-                            }}
-                          />
                           <p>{task.snurs}</p>
                         </div>
                         <div>{task.time}</div>
@@ -400,16 +370,6 @@ function UserTasks(id) {
                       >
                         <div>{task.title}</div>
                         <div className="week-task-s">
-                          <img
-                            className="snurs-pic"
-                            src={
-                              "https://cdn.discordapp.com/attachments/937167004165615657/960581859568390254/paintcoin.png"
-                            }
-                            style={{
-                              width: "1rem",
-                              boxShadow: "2px 2px 4px 1px rgba(0,0,0,0.25)",
-                            }}
-                          />
                           <p>{task.snurs}</p>
                         </div>
                         <div>{task.time}</div>
@@ -452,16 +412,6 @@ function UserTasks(id) {
                       >
                         <div>{task.title}</div>
                         <div className="week-task-s">
-                          <img
-                            className="snurs-pic"
-                            src={
-                              "https://cdn.discordapp.com/attachments/937167004165615657/960581859568390254/paintcoin.png"
-                            }
-                            style={{
-                              width: "1rem",
-                              boxShadow: "2px 2px 4px 1px rgba(0,0,0,0.25)",
-                            }}
-                          />
                           <p>{task.snurs}</p>
                         </div>
                         <div>{task.time}</div>
@@ -504,16 +454,6 @@ function UserTasks(id) {
                       >
                         <div>{task.title}</div>
                         <div className="week-task-s">
-                          <img
-                            className="snurs-pic"
-                            src={
-                              "https://cdn.discordapp.com/attachments/937167004165615657/960581859568390254/paintcoin.png"
-                            }
-                            style={{
-                              width: "1rem",
-                              boxShadow: "2px 2px 4px 1px rgba(0,0,0,0.25)",
-                            }}
-                          />
                           <p>{task.snurs}</p>
                         </div>
                         <div>{task.time}</div>
@@ -556,16 +496,6 @@ function UserTasks(id) {
                       >
                         <div>{task.title}</div>
                         <div className="week-task-s">
-                          <img
-                            className="snurs-pic"
-                            src={
-                              "https://cdn.discordapp.com/attachments/937167004165615657/960581859568390254/paintcoin.png"
-                            }
-                            style={{
-                              width: "1rem",
-                              boxShadow: "2px 2px 4px 1px rgba(0,0,0,0.25)",
-                            }}
-                          />
                           <p>{task.snurs}</p>
                         </div>
                         <div>{task.time}</div>
