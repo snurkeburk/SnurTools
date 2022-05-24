@@ -12,6 +12,7 @@ import { useParams } from "react-router-dom";
 import { MdClose, MdExpandMore, MdWeekend } from "react-icons/md";
 import { getCurrentDayAndMonth } from "./DatePick";
 import TaskDay from "./Tasks/TaskDay";
+import { getCurrentFriendId } from "./Auth/HandleUser";
 function AddTask(taskInfo) {
   const [selectedTimeZone, setSelectedTimezone] = useState([]);
   const [currentUsername, setCurrentUsername] = useState([]);
@@ -212,18 +213,7 @@ function AddTask(taskInfo) {
     console.log(e.target.innerHTML);
     setMinute(e.target.innerHTML);
   };
-  const uploadNewTask = (event) => {
-    event.preventDefault();
-    const elementsArray = [...event.target.elements];
-    const taskData = elementsArray.reduce((accumulator, currentValue) => {
-      if (currentValue.id) {
-        accumulator[currentValue.id] = currentValue.value;
-      }
-      return accumulator;
-    }, {});
-    console.log(taskData);
-    return taskData;
-  };
+
   function makeid(length) {
     var result = "";
     var characters =
@@ -239,7 +229,6 @@ function AddTask(taskInfo) {
     const timer = setTimeout(() => {
       menuSwitch("reset");
     }, 1000);
-    let _date;
     let date = new Date();
     let time = date.toLocaleTimeString();
     let uniqueTid = makeid(5);
@@ -276,7 +265,7 @@ function AddTask(taskInfo) {
         "tasks",
         taskInfo.week.toString(),
         chosenDay,
-        re + "$" + hour + ":" + minute + "$" + uniqueTid
+        hour + ":" + minute + "$" + uniqueTid
       ),
       data
     );

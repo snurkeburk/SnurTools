@@ -15,13 +15,16 @@ import { motion } from "framer-motion";
 import { RiCloseFill } from "react-icons/ri";
 import AddTask from "../AddTask";
 import { MdAdd } from "react-icons/md";
+import { FetchProfileId } from "../Fetch/FetchProfileId";
 
 function TaskDay(n) {
   const [newTask, setNewTask] = useState(false);
   const [task, setTask] = useState([]);
   useEffect(() => {
+    console.log(n);
     FetchDayTask(n.week, n.day, n.uid).then((re) => setTask(re));
-  }, []);
+  }, [n.uid]);
+
   function handleRemove(id) {
     const newArr = [];
     for (let i = 0; i < task.length; i++) {

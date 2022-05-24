@@ -31,7 +31,9 @@ export const DeleteTask = async (tid, id, week, day) => {
       break;
   }
   console.log(tid, id, week, day);
+  let _tid = tid.split("$")[1] + "$" + tid.split("$")[2];
+
   await deleteDoc(
-    doc(db, "users", id, "tasks", week.toString(), day.toString(), tid)
+    doc(db, "users", id, "tasks", week.toString(), day.toString(), _tid)
   );
 };

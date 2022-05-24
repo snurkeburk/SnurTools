@@ -41,14 +41,12 @@ function Sidebar(e) {
   const [seenBgInfo, setSeenBgInfo] = useState(false);
   const [viewingOtherProfile, setViewingOtherProfile] = useState(false);
   useEffect(() => {
-    if (e.uid) {
-      console.log("e.uid", e.uid);
-      FetchProfileId(e.uid).then((re) => {
-        FetchProfileInfo(re);
-      });
+    console.log(e.uid);
+    FetchProfileInfo(e.uid);
+    if (e.uid != authentication.currentUser.uid) {
       setViewingOtherProfile(true);
     } else {
-      FetchProfileInfo(authentication.currentUser.uid);
+      setViewingOtherProfile(false);
     }
   });
   async function FetchProfileInfo(uid) {
@@ -335,7 +333,7 @@ function Sidebar(e) {
                   {viewingOtherProfile ? (
                     <div style={{ textAlign: "center" }}>
                       <p className="qvt-p">
-                        {e.uid} has X thing(s) left to do!
+                        {username} has X thing(s) left to do!
                       </p>
                       <p>They have completed X task(s) today.</p>
                     </div>

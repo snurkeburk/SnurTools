@@ -12,7 +12,6 @@ export async function FetchProfileId(username) {
   if (docSnap.empty) {
     return "";
   } else {
-    console.log(docSnap.docs[0].id);
     return docSnap.docs[0].id;
   }
 }

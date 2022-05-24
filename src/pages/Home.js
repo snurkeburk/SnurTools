@@ -24,9 +24,11 @@ function Home() {
   const { id } = useParams();
   useEffect(() => {
     FetchBackground();
+    getCurrentFriendId(id).then((re) => setFid(re[0]));
   });
   // Fetch the background for current user
   async function FetchBackground() {
+    console.log("Fetching background...");
     if (id) {
       await getCurrentFriendId(id).then((re) => setFid(re[0]));
       const docRef = doc(db, "users", fid);
@@ -56,7 +58,7 @@ function Home() {
       >
         <div className="home-sidebar-container">
           {" "}
-          <Sidebar />
+          <Sidebar uid={authentication.currentUser.uid} />
         </div>
         <div className="home-tasks-container">
           <UserTasks uid={authentication.currentUser.uid} />
@@ -71,10 +73,10 @@ function Home() {
       >
         <div className="home-sidebar-container">
           {" "}
-          <Sidebar uid={id} />
+          <Sidebar uid={fid} />
         </div>
         <div className="home-tasks-container">
-          <UserTasks uid={id} />
+          <UserTasks uid={fid} />
         </div>
       </div>
     );

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { cloneElement, useEffect, useState } from "react";
 import {
   FetchNewWeek,
   FetchWeek,
@@ -13,8 +13,12 @@ import TaskDay from "../compontents/Tasks/TaskDay";
 import { Link, useParams } from "react-router-dom";
 import { FetchProfileInfo } from "../compontents/Fetch/FetchProfile";
 import { authentication } from "../services/firebase-config";
+import { FetchProfileId } from "../compontents/Fetch/FetchProfileId";
+import EderraMove from "../compontents/Tasks/EderraMove";
+import SelectDaysButton from "../compontents/Tasks/SelectDaysButton";
 
 function UserTasks(id) {
+  //EderraMove(); //! <<<< Use only to move weeks!!!!
   const [tasks, setTasks] = useState([]);
   const [displayWeek, setDisplayWeek] = useState(true);
   const [weekCounter, setWeekCounter] = useState(0);
@@ -23,8 +27,9 @@ function UserTasks(id) {
   const [currentWeek, setCurrentWeek] = useState("");
   const [displayDay, setDisplayDay] = useState("");
   const [idCount, setIdCount] = useState(0);
-  const [currentUser, setCurrentUser] = useState("");
   const [currentUsername, setCurrentUsername] = useState("");
+  const [daysToAdd, setDaysToAdd] = useState([]);
+  const [viewingOtherProfile, setViewingOtherProfile] = useState(false);
   let _id = useParams().id; // gets the username from the url
   console.log(idCount);
   useEffect(() => {
@@ -36,39 +41,25 @@ function UserTasks(id) {
     let k = parseInt(document.getElementById("nr").innerHTML.split(" ")[1]);
     setCurrentWeek(k);
   }, []);
-
+  // create a function to see if the url changes and if so, update the tasks
   useEffect(() => {
-    // can't remember what this does but it works
-    if (_id != currentUser) {
-      setIdCount(0);
+    setTasks([]);
+    if (id.uid != authentication.currentUser.uid) {
+      setViewingOtherProfile(true);
     }
-    // fetching friends profile
-    if (_id && idCount == 0) {
-      setCurrentUser(_id);
-      console.log(_id);
-      FetchWeek(id).then((re) => setTasks(re));
-      let k = parseInt(document.getElementById("nr").innerHTML.split(" ")[1]);
-      setCurrentWeek(k);
-      setIdCount(1);
-    }
-    // fetching own task after visiting friends profile
-    if (idCount == 0 && tasks.length == 0) {
-      console.log("hello");
-      let k = parseInt(document.getElementById("nr").innerHTML.split(" ")[1]);
-      FetchNewWeek(k, id).then((re) => {
-        setTasks(re);
-      });
-    }
-  });
+    FetchWeek(id.uid).then((re) => setTasks(re));
+    let k = parseInt(document.getElementById("nr").innerHTML.split(" ")[1]);
+    setCurrentWeek(k);
+  }, [id.uid]);
+
   function weekSwitch(i) {
     setSwitchingWeek(1);
     setSwitchingWeekCount(i);
     if (i > 0) {
-      // k = new week number
       let k =
         parseInt(document.getElementById("nr").innerHTML.split(" ")[1]) + 1;
       setCurrentWeek(k);
-      FetchNewWeek(k, id).then((re) => {
+      FetchNewWeek(k, id.uid).then((re) => {
         const timer = setTimeout(() => {
           setTasks(re);
         }, 100);
@@ -81,7 +72,7 @@ function UserTasks(id) {
       let k =
         parseInt(document.getElementById("nr").innerHTML.split(" ")[1]) - 1;
       setCurrentWeek(k);
-      FetchNewWeek(k, id).then((re) => setTasks(re));
+      FetchNewWeek(k, id.uid).then((re) => setTasks(re));
       const timer = setTimeout(() => {
         setSwitchingWeek(0);
       }, 400);
@@ -132,6 +123,7 @@ function UserTasks(id) {
       },
     },
   };
+
   return (
     <div>
       <motion.div
@@ -195,15 +187,22 @@ function UserTasks(id) {
             className="bfd-button"
             onClick={() => {
               setDisplayWeek((displayWeek) => !displayWeek);
-              FetchNewWeek(currentWeek, id).then((re) => setTasks(re));
+              FetchNewWeek(currentWeek, id.uid).then((re) => setTasks(re));
             }}
           >
             Back
           </button>
         ) : (
           <div className="task-top-right">
-            {idCount > 0 ? (
-              <Link onClick={() => setTasks([])} className="rtp-link" to="/">
+            {viewingOtherProfile ? (
+              <Link
+                onClick={() => {
+                  setTasks([]);
+                  setViewingOtherProfile(false);
+                }}
+                className="rtp-link"
+                to="/"
+              >
                 Return to profile
               </Link>
             ) : (
@@ -212,6 +211,7 @@ function UserTasks(id) {
           </div>
         )}
       </motion.div>
+
       <AnimatePresence>
         {displayWeek && (
           <motion.div
@@ -221,6 +221,14 @@ function UserTasks(id) {
             animate={switchingWeek == 0 ? "show" : "hidden"}
             exit={{ opacity: 0, height: 0 }}
           >
+            {/* <SelectDaysButton day={"monday"} week={currentWeek.toString()} />
+            <SelectDaysButton day={"tuesday"} week={currentWeek.toString()} />
+            <SelectDaysButton day={"wednesday"} week={currentWeek.toString()} />
+            <SelectDaysButton day={"thursday"} week={currentWeek.toString()} />
+            <SelectDaysButton day={"friday"} week={currentWeek.toString()} />
+            <SelectDaysButton day={"saturday"} week={currentWeek.toString()} />
+            <SelectDaysButton day={"sunday"} week={currentWeek.toString()} />
+            */}
             <motion.button
               whileHover={dayStyle}
               className="mon"
@@ -248,7 +256,8 @@ function UserTasks(id) {
                         </div>
                         <div>{task.time}</div>
                         <div>{task.content}</div>
-                        {task.addedBy != currentUsername || idCount > 0 ? (
+                        {authentication.currentUser.uid != id.uid ||
+                        task.addedBy != currentUsername ? (
                           <div className="task-week-addedby">
                             Added by: {task.addedBy}
                           </div>
@@ -290,7 +299,8 @@ function UserTasks(id) {
                         </div>
                         <div>{task.time}</div>
                         <div>{task.content}</div>
-                        {task.addedBy != currentUsername || idCount > 0 ? (
+                        {authentication.currentUser.uid != id.uid ||
+                        task.addedBy != currentUsername ? (
                           <div className="task-week-addedby">
                             Added by: {task.addedBy}
                           </div>
@@ -332,7 +342,8 @@ function UserTasks(id) {
                         </div>
                         <div>{task.time}</div>
                         <div>{task.content}</div>
-                        {task.addedBy != currentUsername || idCount > 0 ? (
+                        {authentication.currentUser.uid != id.uid ||
+                        task.addedBy != currentUsername ? (
                           <div className="task-week-addedby">
                             Added by: {task.addedBy}
                           </div>
@@ -374,7 +385,8 @@ function UserTasks(id) {
                         </div>
                         <div>{task.time}</div>
                         <div>{task.content}</div>
-                        {task.addedBy != currentUsername || idCount > 0 ? (
+                        {authentication.currentUser.uid != id.uid ||
+                        task.addedBy != currentUsername ? (
                           <div className="task-week-addedby">
                             Added by: {task.addedBy}
                           </div>
@@ -416,7 +428,8 @@ function UserTasks(id) {
                         </div>
                         <div>{task.time}</div>
                         <div>{task.content}</div>
-                        {task.addedBy != currentUsername || idCount > 0 ? (
+                        {authentication.currentUser.uid != id.uid ||
+                        task.addedBy != currentUsername ? (
                           <div className="task-week-addedby">
                             Added by: {task.addedBy}
                           </div>
@@ -458,7 +471,7 @@ function UserTasks(id) {
                         </div>
                         <div>{task.time}</div>
                         <div>{task.content}</div>
-                        {task.addedBy != currentUsername || idCount > 0 ? (
+                        {authentication.currentUser.uid != id.uid ? (
                           <div className="task-week-addedby">
                             Added by: {task.addedBy}
                           </div>
@@ -500,7 +513,7 @@ function UserTasks(id) {
                         </div>
                         <div>{task.time}</div>
                         <div>{task.content}</div>
-                        {task.addedBy != currentUsername || idCount > 0 ? (
+                        {authentication.currentUser.uid != id.uid ? (
                           <div className="task-week-addedby">
                             Added by: {task.addedBy}
                           </div>

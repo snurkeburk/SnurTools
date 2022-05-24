@@ -7,6 +7,7 @@
     width: 100%;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: /*1.05rem*/ 1fr;
     overflow-y: hidden;
     overflow-x: hidden;
 }
@@ -142,4 +143,19 @@
 .tasks-bot {
     margin-bottom: 1rem;
     z-index: 5000;
+}
+
+.select-day-button {
+    height: 1rem;
+    border-right-style: solid;
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0);
+    border-right-color: rgba(255, 255, 255, 0.534);
+    background-color: rgba(0, 0, 0, 0.452);
+    color: white;
+}
+.select-day-button.right {
+    margin-right: 0;
+    border-right-color: rgba(255, 255, 255, 0);
+
 }
