@@ -14,7 +14,13 @@ import "../styles/Sidebar.css";
 import { authentication, signOutOfGoogle } from "../services/firebase-config";
 import { db } from "../services/firebase-config";
 import Cookies from "js-cookie";
-import { doc, FieldValue, getDoc, setDoc } from "firebase/firestore";
+import {
+  doc,
+  FieldValue,
+  onSnapshot,
+  getDoc,
+  setDoc,
+} from "firebase/firestore";
 import { User } from "./Auth/User";
 import { getAuth, signOut } from "firebase/auth";
 import FriendList from "./FriendList";
@@ -23,6 +29,13 @@ import Settings from "./Settings";
 import { IoMdArrowBack } from "react-icons/io";
 import defaultProfilePic from "../images/snurtools-defaultpfp.png";
 import { FetchProfileId } from "./Fetch/FetchProfileId";
+import {
+  FetchCurrentSidebarTask,
+  FetchTasksDone,
+  FetchTasksLeft,
+} from "./Fetch/SidebarTasks";
+import crown from "../images/crown.png";
+
 //https://cdn.discordapp.com/attachments/937167004165615657/960581859245453322/paintcoin.gif
 function Sidebar(e) {
   var user;
@@ -40,15 +53,53 @@ function Sidebar(e) {
   const [backgroundIsChosen, setBackgroundIsChosen] = useState(true);
   const [seenBgInfo, setSeenBgInfo] = useState(false);
   const [viewingOtherProfile, setViewingOtherProfile] = useState(false);
+  const [tasksTodo, setTasksTodo] = useState("x");
+  const [tasksDone, setTasksDone] = useState("x");
+  const [tasksCurrent, setTasksCurrent] = useState("");
+  const [online, setOnline] = useState(false);
+  const [tintColor, setTintColor] = useState("#000");
+  const [tintBlur, setTintBlur] = useState("0px");
+  const [tintOpacity, setTintOpacity] = useState("0");
+  const [settingWidth, setSettingWidth] = useState("4rem");
+  useEffect(() => {
+    onSnapshot(doc(db, "users", authentication.currentUser.uid), (doc) => {
+      FetchProfileTintSettings();
+    });
+  }, []);
   useEffect(() => {
     console.log(e.uid);
-    FetchProfileInfo(e.uid);
+
     if (e.uid != authentication.currentUser.uid) {
       setViewingOtherProfile(true);
+      FetchProfileInfo(e.uid);
+      FetchTasksLeft(e.uid).then((re) => setTasksTodo(re));
+      FetchTasksDone(e.uid).then((re) => setTasksDone(re));
+      FetchCurrentSidebarTask(e.uid).then((re) => setTasksCurrent(re));
     } else {
       setViewingOtherProfile(false);
+      onSnapshot(doc(db, "users", e.uid), (doc) => {
+        console.log(e.uid);
+        FetchProfileInfo(e.uid);
+        FetchTasksLeft(e.uid).then((re) => setTasksTodo(re));
+        FetchTasksDone(e.uid).then((re) => setTasksDone(re));
+        FetchCurrentSidebarTask(e.uid).then((re) => setTasksCurrent(re));
+      });
     }
   });
+  async function FetchProfileTintSettings() {
+    const docc = await doc(db, "users", authentication.currentUser.uid);
+    const docSnap = await getDoc(docc);
+    if (docSnap.exists()) {
+      console.log(
+        docSnap.data().tintColor,
+        docSnap.data().tintBlur,
+        docSnap.data().tintOpacity
+      );
+      setTintColor(docSnap.data().tintColor);
+      setTintBlur(docSnap.data().tintBlur);
+      setTintOpacity(docSnap.data().tintOpacity);
+    }
+  }
   async function FetchProfileInfo(uid) {
     const docRef = doc(db, "users", uid);
     const docSnap = await getDoc(docRef);
@@ -61,6 +112,8 @@ function Sidebar(e) {
       setTag(docSnap.data().tag);
       setUsername(docSnap.data().username);
       setOwnId(docSnap.data().uid);
+      setOnline(docSnap.data().online);
+
       if (docSnap.data().profilePic != "") {
         setProfilePic(docSnap.data().profilePic);
       } else {
@@ -278,7 +331,14 @@ function Sidebar(e) {
           </form>
         </div>
       </motion.div>
-      <div className="Sidebar-header">
+      <div
+        className="Sidebar-header"
+        style={{
+          backgroundColor: "#000000" + tintOpacity,
+          backdropFilter: "blur(" + tintBlur / 10 + "px)",
+          backdropFilter: "blur(" + tintBlur / 10 + "px)",
+        }}
+      >
         <div className="inner-sb">
           <Collapse isOpened={settings}>
             <Settings />
@@ -296,12 +356,37 @@ function Sidebar(e) {
                     "https://cdn.discordapp.com/attachments/937167004165615657/960581859245453322/paintcoin.gif"
                   }
                   alt="loading..."
-                  style={{ width: "2rem", marginRight: "1rem" }}
+                  className="snurs-gif"
                 />
                 <p>{snurs}</p>
               </div>
               <div className="profile-container">
+                {username == "Ederraviel" ? (
+                  <img
+                    style={{
+                      position: "absolute",
+                      width: "3rem",
+                      right: "7rem",
+                      top: "1.3rem",
+                      transform: "rotate(23deg)",
+                      zIndex: "-1",
+                    }}
+                    src={crown}
+                    alt="EderraCrown"
+                  />
+                ) : (
+                  <div></div>
+                )}
                 <motion.img
+                  style={
+                    online
+                      ? {
+                          border: "2px inset rgb(120, 216, 107)",
+                        }
+                      : {
+                          borderStyle: "none",
+                        }
+                  }
                   whileHover={{ opacity: "20%" }}
                   className="profile-pic-main"
                   src={profilePic}
@@ -329,22 +414,24 @@ function Sidebar(e) {
                   </h1>
                   <p className="profile-tag">{tag}</p>
                 </motion.div>
-                <div className="quick-view-todo" style={{ opacity: "70%" }}>
+                <div className="quick-view-todo">
                   {viewingOtherProfile ? (
                     <div style={{ textAlign: "center" }}>
                       <p className="qvt-p">
-                        {username} has X thing(s) left to do!
+                        {username} has {tasksTodo} thing(s) left to do!
                       </p>
-                      <p>They have completed X task(s) today.</p>
+                      <p>They have completed {tasksDone} task(s) today.</p>
                     </div>
                   ) : (
                     <div style={{ textAlign: "center" }}>
-                      <p className="qvt-p">You have X thing(s) left to do!</p>
-                      <p>You have completed X task(s) today.</p>
+                      <p className="qvt-p">
+                        You have {tasksTodo} thing(s) left to do!
+                      </p>
+                      <p>You have completed {tasksDone} task(s) today.</p>
                     </div>
                   )}
                   <div className="currrent-todo">
-                    <h2>{"{current task}"}</h2>
+                    <h2>{tasksCurrent}</h2>
                   </div>
                 </div>
               </div>
@@ -441,7 +528,13 @@ function Sidebar(e) {
       ) : (
         <div></div>
       )}
-      <div className="sidebar-buttons-bot">
+      <div
+        className="sidebar-buttons-bot"
+        style={{
+          backgroundColor: "#000000" + tintOpacity,
+          backdropFilter: "blur(" + tintBlur / 10 + "px)",
+        }}
+      >
         <div>
           <button className="button signout" onClick={() => signOutOfGoogle()}>
             <FaSignOutAlt />
@@ -451,12 +544,12 @@ function Sidebar(e) {
           <button className="button">
             <AiOutlineQuestion />
           </button>
-          <button
+          <motion.button
             className="button"
             onClick={() => (settings ? setSettings(false) : setSettings(true))}
           >
             <FiSettings />
-          </button>
+          </motion.button>
         </div>
       </div>
     </div>

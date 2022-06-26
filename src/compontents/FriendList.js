@@ -6,7 +6,8 @@ import { useCookies } from "react-cookie";
 import { switchDay } from "./DatePick";
 import FetchTasks from "./Fetch/FetchTasks";
 import { Link } from "react-router-dom";
-
+import "../styles/animations.css";
+import { BsDot } from "react-icons/bs";
 function FriendList() {
   const [finalFriendList, setFinalFriendList] = useState([]);
   const [loadingFriends, setloadingFriends] = useState(true);
@@ -16,9 +17,11 @@ function FriendList() {
     });
   }, []);
 
-  async function fetchFriendList() {
-    setloadingFriends(true);
-    setFinalFriendList([]);
+  async function fetchFriendList(stealth) {
+    if (!stealth) {
+      setloadingFriends(true);
+      setFinalFriendList([]);
+    }
     const friendlist = [];
     const innerFriendList = [];
     let uid = authentication.currentUser.uid;
@@ -42,6 +45,7 @@ function FriendList() {
         friendSnap.data().status,
         friendSnap.data().profilePic,
         friendSnap.data().uid,
+        friendSnap.data().online,
       ]);
       if (i == friendlist.length - 1) {
         setFinalFriendList(innerFriendList);
@@ -51,16 +55,41 @@ function FriendList() {
     setloadingFriends(false);
   }
 
+  // create a function that repeats every 1 second
+  useEffect(() => {
+    console.log("fetching friendlist");
+    const interval = setInterval(() => {
+      fetchFriendList(true);
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
   return (
     <div>
       {loadingFriends ? (
-        <div>loading</div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignContent: "center",
+          }}
+        >
+          <svg className="svg-loading-friends" viewBox="25 25 50 50">
+            <circle
+              className="circle-loading-friends"
+              cx="50"
+              cy="50"
+              r="20"
+            ></circle>
+          </svg>
+        </div>
       ) : (
         <div>
           {finalFriendList.length > 0 ? (
             finalFriendList.map((friend, index) => (
               <div key={friend}>
                 <motion.button
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
                   whileHover={{
                     backgroundColor: "rgba(199, 199, 199, 0.137)",
                   }}
@@ -71,7 +100,16 @@ function FriendList() {
                     className="friend-inner"
                     style={{ textDecoration: "none" }}
                   >
-                    <img className="friend-pic" src={friend[2]} />
+                    <img
+                      style={
+                        friend[4]
+                          ? { borderColor: "rgb(120, 216, 107)" }
+                          : { borderStyle: "none" }
+                      }
+                      className="friend-pic"
+                      src={friend[2]}
+                    />
+
                     <div className="friend-top">
                       <h5>{friend[0]}</h5>
                       <p>{friend[1]}</p>

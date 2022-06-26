@@ -13,7 +13,6 @@
     margin: 0;
     width: 100%;
     margin-left: 4rem;
-
 }
 .Tasks-header {
     width: 100%;
@@ -157,8 +156,8 @@ rect
 }
 .task {
     background-color: rgb(154, 115, 218);
-    width: calc(20vw + .4rem);
-    max-width: 16rem;
+    width: max-content;
+    max-width: 22rem;
     min-width: 12rem;
     border-radius: 1.5rem;
     text-align: center;
@@ -199,7 +198,10 @@ rect
 .task-title,.task-time,.task-content {
     font-size: 1.2rem;
     font-weight: 100;
-    max-width: 16rem;
+    max-width: 22rem;
+}
+.task-time{
+    padding-left: 1.5rem;
 }
 
 
@@ -228,14 +230,16 @@ rect
     justify-content: space-between;
     align-items: center;
 }
-.delete-task-button {
+
+
+
+/*.delete-task-button, .edit-task-button {
     z-index: 5000;
     background-color: rgba(235, 228, 228, 0.178);
     font-size: 1.1rem;
     border-radius: 50%;
     height: 1.2rem;
     width: 1.2rem;
-    margin-right: -1rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -245,9 +249,8 @@ rect
 }
 .delete-task-button:hover{
     cursor: pointer;
-    background-color: rgb(241, 105, 105);
     transition-duration: 200ms;
-}
+}*/
 
 .task-snurs .inner-task-snurs{
     display: flex;
@@ -303,8 +306,17 @@ rect
     justify-content: center;
     border-style: none;
     color: white;
+    z-index: 3000;
+    
 
 }
+.new-task-time-wrapper {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-evenly;
+    width:15rem;
+}
+
 .clear-all-button {
     width: 2rem;
     height: 2rem;
@@ -345,6 +357,8 @@ rect
     top: 0;
     left: 50%;
     transform: translate(-50%, 0);
+    z-index: 2500;
+
 }
 
 .new-task-wrapper{
@@ -403,7 +417,7 @@ rect
 
 }
 .new-inner-task {
-    background-color: rgba(26, 28, 31, 0.562); /*custom later */
+    background-color: rgb(17, 24, 34); /*custom later */
     margin: .3rem 0rem;
     width: 30rem;
     border-radius: 1.5rem;
@@ -440,6 +454,7 @@ rect
 
 
 .new-task-preview {
+    margin-top: 0.3rem;
     border-radius: 1.5rem;
     background-color: rgba(26, 28, 31, 0.562); /*custom later */}
 
@@ -529,3 +544,98 @@ rect
     width: 100%;
 }
 
+
+.task-selected-container{
+    display: grid;
+    grid-template-columns: 1fr 0.3fr;
+    height: 100%;
+    margin-top: (-1 * (100vh - 100px));
+
+}
+.task-selected-edit-remove {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+.task-selected-edit-remove button {
+    background-color: rgba(0, 0, 0, 0);
+    color: white;
+    font-size: 1.4rem;
+    border-style: none;
+    padding: 0;
+    margin:0.3rem;
+    width: auto;
+    border-radius: 0%;
+}
+.task-selected-complete {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+.complete-task {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.5rem;
+    color: white;
+    border-style:none ;
+    border-radius: 50%;
+    background-color: rgba(0, 128, 0, 0);
+}
+
+/*if screen smaller than 800px*/
+@media screen and (max-width: 800px) {
+    .tasks-inners .task {
+    }
+    .new-task-preview {
+        width: calc(100vw - 5.4rem);
+        margin-top: 0.3rem;
+        border-radius: 1.5rem;
+        background-color: rgba(26, 28, 31, 0.562); /*custom later */}
+    
+    .new-task-container{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, 0);
+        z-index: 2500;
+    
+    }
+    .new-task-wrapper{
+        margin-right: -1rem;
+        width: calc(100vw - 4rem);
+        display: flex;
+        flex-direction: column;
+    }
+    .new-inner-task {
+        width: 100%;
+    }
+    .task {
+        background-color: rgb(154, 115, 218);
+        width: 100%;
+        border-radius: 0rem;
+        text-align: center;
+        box-shadow: 2px 2px 4px 1px rgba(0,0,0,0.25); /*OPTIONAL LATER*/
+        display: flex;
+        justify-content: center;
+        padding: .3rem 0rem;
+    }
+    .Home-header {
+        padding: 0;
+        background-position:center;
+    }
+    .Home-header .home-sidebar-container {
+        width: 4rem;
+    }
+    .Home-header .home-tasks-container {
+        margin: 0;
+        width: 100%;
+        overflow-x: hidden;
+        margin-left: 0rem;
+    }
+}

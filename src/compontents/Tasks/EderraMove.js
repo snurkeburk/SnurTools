@@ -13,6 +13,11 @@ import { db } from "../../services/firebase-config";
 function EderraMove() {
   // TODO: Move ederras tasks to the next week
   // iFuckedUp();
+  test();
+  function test() {
+    console.log("HELLO");
+  }
+
   async function iFuckedUp() {
     console.log("i fucked up");
     let task = [];

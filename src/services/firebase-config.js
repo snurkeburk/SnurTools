@@ -16,6 +16,7 @@ import { Navigate, Route, useHistory } from "react-router-dom";
 import Home from "../pages/Home";
 import AuthUser from "../compontents/Auth/AuthUser";
 import Cookies from "js-cookie";
+import { CheckOnline } from "../compontents/Auth/CheckOnline";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -39,15 +40,17 @@ export { authentication, db };
 
 export const auth = getAuth();
 export function signOutOfGoogle() {
-  signOut(auth)
-    .then(() => {
-      // Sign-out successful.
-      Cookies.remove("uid");
-      window.location.reload(true);
-    })
-    .catch((error) => {
-      // An error happened.
-    });
+  CheckOnline(false, authentication.currentUser.uid).then(() => {
+    signOut(auth)
+      .then(() => {
+        // Sign-out successful.
+        Cookies.remove("uid");
+        window.location.reload(true);
+      })
+      .catch((error) => {
+        // An error happened.
+      });
+  });
 }
 
 export const signInWithGoogle = () => {

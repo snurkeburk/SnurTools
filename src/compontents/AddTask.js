@@ -4,15 +4,16 @@ import "../styles/Home.css";
 import { FetchProfileInfo } from "./Fetch/FetchProfile";
 import { authentication, db } from "../services/firebase-config";
 
-import { AiOutlinePlus } from "react-icons/ai";
+import { AiOutlineCheck, AiOutlinePlus } from "react-icons/ai";
 import { CirclePicker } from "react-color";
 import { Collapse } from "react-collapse";
-import { arrayRemove, doc, setDoc } from "firebase/firestore";
+import { arrayRemove, deleteDoc, doc, setDoc } from "firebase/firestore";
 import { useParams } from "react-router-dom";
 import { MdClose, MdExpandMore, MdWeekend } from "react-icons/md";
 import { getCurrentDayAndMonth } from "./DatePick";
 import TaskDay from "./Tasks/TaskDay";
 import { getCurrentFriendId } from "./Auth/HandleUser";
+import { DeleteTask } from "./Tasks/DeleteTask";
 function AddTask(taskInfo) {
   const [selectedTimeZone, setSelectedTimezone] = useState([]);
   const [currentUsername, setCurrentUsername] = useState([]);
@@ -32,6 +33,8 @@ function AddTask(taskInfo) {
   const [selectSnurActive, setSelectSnurActive] = useState(false);
   const [hour, setHour] = useState("12");
   const [minute, setMinute] = useState("00");
+  const [endHour, setEndHour] = useState("12");
+  const [endMinute, setEndMinute] = useState("00");
   const [Snur, setSnur] = useState("0");
   const [selectedBg, setSelectedBg] = useState("rgba(255, 255, 255, 0.242)");
   const [timeHeight, setTimeHeight] = useState("10rem");
@@ -43,6 +46,8 @@ function AddTask(taskInfo) {
   const [previewVisibility, setPreviewVisibility] = useState("block");
   const [finDate, setFinDate] = useState("");
   const [chosenDay, setChosenDay] = useState("");
+  const [edit, setEdit] = useState(false);
+  const [oldTid, setOldTid] = useState("");
   const id = useParams().id;
   let hoursAM = ["1", "2", "3"];
   let snurs = ["1", "2", "3", "4", "5", "6", "7"];
@@ -181,6 +186,51 @@ function AddTask(taskInfo) {
       setSelectedSnur(false);
     }
   };
+  useEffect(() => {
+    if (taskInfo.info.tid) {
+      setOldTid(taskInfo.info.tid);
+      console.log(taskInfo.info);
+      setEdit(true);
+      console.log("EDIT");
+      setTitle(taskInfo.info.title);
+      setContent(taskInfo.info.content);
+      setComment(taskInfo.info.comment);
+      setGlobTime(taskInfo.info.globTime);
+      setSelectedSnur(taskInfo.info.snurs);
+      setSelectedBg(taskInfo.info.color);
+      setFinDate(taskInfo.info.date);
+      setChosenDay(taskInfo.info.day);
+      setHour(taskInfo.info.time.split(":")[0]);
+      setMinute(taskInfo.info.time.split(":")[1]);
+      setSnur(taskInfo.info.snurs);
+      setCurrentUsername(taskInfo.info.addedBy);
+      if (taskInfo.info.endTime) {
+        setEndHour(taskInfo.info.endTime.split(":")[0]);
+        setEndMinute(taskInfo.info.endTime.split(":")[1]);
+      }
+      console.log("===============EDIT=================");
+      console.log("title " + taskInfo.info.title);
+      console.log("content " + taskInfo.info.content);
+      console.log("comment: " + taskInfo.info.comment);
+      console.log("snurs: " + taskInfo.info.snurs);
+      console.log("bg : " + taskInfo.info.color);
+      console.log("finDate: " + taskInfo.info.date);
+      console.log("day: " + taskInfo.info.day);
+      console.log("hour " + taskInfo.info.time.split(":")[0]);
+      console.log("min " + taskInfo.info.time.split(":")[1]);
+      console.log("added by: " + taskInfo.info.addedBy);
+      console.log("====================================");
+
+      setSettingFinal(true);
+      setSettingColor(true);
+      setPreviewVisibility("block");
+      setSettingTime(true);
+      setSettingContent(true);
+      setSettingComment(false);
+      setSettingSnurs(true);
+    }
+  }, []);
+
   const hoversnur = (e) => {
     if (!selectSnurActive) {
       if (snurs.includes(e.target.innerHTML.split(">")[1])) {
@@ -213,7 +263,14 @@ function AddTask(taskInfo) {
     console.log(e.target.innerHTML);
     setMinute(e.target.innerHTML);
   };
-
+  const setendMinute = (e) => {
+    console.log(e.target.innerHTML);
+    setEndMinute(e.target.innerHTML);
+  };
+  const setendHour = (e) => {
+    console.log(e.target.innerHTML);
+    setEndHour(e.target.innerHTML);
+  };
   function makeid(length) {
     var result = "";
     var characters =
@@ -231,17 +288,31 @@ function AddTask(taskInfo) {
     }, 1000);
     let date = new Date();
     let time = date.toLocaleTimeString();
-    let uniqueTid = makeid(5);
+    let uniqueTid = "";
+    if (edit) {
+      uniqueTid = oldTid.split("$")[2];
+    } else {
+      uniqueTid = makeid(5);
+    }
+
     await getCurrentDayAndMonth("date").then((re) => {
       setFinDate(re);
       console.log(finDate);
       setGlobTime(time);
+      let taskOwners = [];
+      if (taskInfo.id == authentication.currentUser.uid) {
+        taskOwners.push(authentication.currentUser.uid);
+      } else {
+        taskOwners.push(taskInfo.id);
+        taskOwners.push(authentication.currentUser.uid);
+      }
       const data = {
         addedBy: currentUsername,
         title: title,
         time: hour + ":" + minute,
+        endTime: endHour + ":" + endMinute,
         content: content,
-        taskOwners: taskInfo.id,
+        taskOwners: taskOwners,
         type: "task",
         snurs: Snur,
         comment: comment,
@@ -257,18 +328,63 @@ function AddTask(taskInfo) {
   }
 
   async function FinalUpload(data, re, uniqueTid) {
-    await setDoc(
-      doc(
-        db,
-        "users",
-        taskInfo.id,
-        "tasks",
-        taskInfo.week.toString(),
-        chosenDay,
-        hour + ":" + minute + "$" + uniqueTid
-      ),
-      data
+    console.log("UPLOADING" + edit + "OLD TID:  " + oldTid);
+    let oldtid = oldTid.split("$")[2];
+    // delete doc if edit
+    if (edit) {
+      console.log(
+        "DELETEING OLD " + oldTid.split("$")[1] + "$" + oldTid.split("$")[2]
+      );
+      await deleteDoc(
+        doc(
+          db,
+          "users",
+          taskInfo.id,
+          "tasks",
+          taskInfo.week.toString(),
+          chosenDay,
+          oldTid.split("$")[1] + "$" + oldTid.split("$")[2]
+        )
+      );
+      await setDoc(
+        doc(
+          db,
+          "users",
+          taskInfo.id,
+          "tasks",
+          taskInfo.week.toString(),
+          chosenDay,
+          hour + ":" + minute + "$" + oldtid
+        ),
+        data
+      );
+    } else {
+      await setDoc(
+        doc(
+          db,
+          "users",
+          taskInfo.id,
+          "tasks",
+          taskInfo.week.toString(),
+          chosenDay,
+          hour + ":" + minute + "$" + uniqueTid
+        ),
+        data
+      );
+    }
+    console.log(
+      "users -> tasks -> " +
+        taskInfo.week.toString() +
+        " -> " +
+        chosenDay +
+        " -> " +
+        hour +
+        ":" +
+        minute +
+        "$" +
+        uniqueTid
     );
+    console.log(data);
     setSettingFinal(false);
     setSettingColor(false);
   }
@@ -361,12 +477,16 @@ function AddTask(taskInfo) {
         <motion.div
           className="new-task"
           variants={newTaskVariants}
-          initial={{ x: "calc(50% - 1rem)" }}
+          initial={
+            window.innerWidth > 800 ? { x: "calc(50% - 1rem)" } : { x: "0" }
+          }
           animate={settingFinal ? "slideOut" : "stop"}
         >
           <div className="new-inner-task">
             {id ? (
               <h1 className="n-t-t-h">New task for {id}</h1>
+            ) : edit ? (
+              <h1 className="n-t-t-h">Edit task</h1>
             ) : (
               <h1 className="n-t-t-h">New task</h1>
             )}
@@ -377,7 +497,8 @@ function AddTask(taskInfo) {
                 type="text"
                 id="title"
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder={"A nice title"}
+                placeholder={edit ? taskInfo.info.title : "A nice title"}
+                defaultValue={edit ? taskInfo.info.title : ""}
                 multiple={true}
               ></motion.input>
             </Collapse>
@@ -403,71 +524,141 @@ function AddTask(taskInfo) {
           </div>
           <div className="new-inner-task">
             <p>Time</p>
-
             <Collapse isOpened={settingTime}>
-              <p>
-                {hour} : {minute}
-              </p>
-              <div className="time-list">
-                <motion.div
-                  className="hour-list"
-                  style={{ maxHeight: timeHeight }}
-                >
-                  {selectedTimeZone == "12" ? (
-                    hoursAM.length > 0 ? (
-                      hoursAM.map((hour) => (
-                        <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          transition={{ duration: 0.1 }}
-                          key={hour}
-                          onClick={sethour}
-                        >
-                          {hour}
-                        </motion.button>
-                      ))
-                    ) : (
-                      <div>
-                        <p>An error occured with the time thing.</p>
-                      </div>
-                    )
-                  ) : hours.length > 0 ? (
-                    hours.map((hour) => (
-                      <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        transition={{ duration: 0.1 }}
-                        key={hour}
-                        onClick={sethour}
-                      >
-                        {hour}
-                      </motion.button>
-                    ))
-                  ) : (
-                    <div>
-                      <p>An error occured with the time thing.</p>
-                    </div>
-                  )}
-                </motion.div>
-                <motion.div
-                  className="minute-list"
-                  style={{ maxHeight: timeHeight }}
-                >
-                  {minutes.length > 0 ? (
-                    minutes.map((minute) => (
-                      <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        transition={{ duration: 0.1 }}
-                        key={minute}
-                        onClick={setminute}
-                      >
-                        {minute}
-                      </motion.button>
-                    ))
-                  ) : (
-                    <div>
-                      <p>An error occured with the time thing.</p>
-                    </div>
-                  )}
-                </motion.div>
+              <div className="new-task-time-wrapper">
+                <div className="time-one">
+                  <p>
+                    {hour} : {minute}
+                  </p>
+                  <div className="time-list">
+                    <motion.div
+                      className="hour-list"
+                      style={{ maxHeight: timeHeight }}
+                    >
+                      {selectedTimeZone == "12" ? (
+                        hoursAM.length > 0 ? (
+                          hoursAM.map((hour) => (
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              transition={{ duration: 0.1 }}
+                              key={hour}
+                              onClick={sethour}
+                            >
+                              {hour}
+                            </motion.button>
+                          ))
+                        ) : (
+                          <div>
+                            <p>An error occured with the time thing.</p>
+                          </div>
+                        )
+                      ) : hours.length > 0 ? (
+                        hours.map((hour) => (
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            transition={{ duration: 0.1 }}
+                            key={hour}
+                            onClick={sethour}
+                          >
+                            {hour}
+                          </motion.button>
+                        ))
+                      ) : (
+                        <div>
+                          <p>An error occured with the time thing.</p>
+                        </div>
+                      )}
+                    </motion.div>
+                    <motion.div
+                      className="minute-list"
+                      style={{ maxHeight: timeHeight }}
+                    >
+                      {minutes.length > 0 ? (
+                        minutes.map((minute) => (
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            transition={{ duration: 0.1 }}
+                            key={minute}
+                            onClick={setminute}
+                          >
+                            {minute}
+                          </motion.button>
+                        ))
+                      ) : (
+                        <div>
+                          <p>An error occured with the time thing.</p>
+                        </div>
+                      )}
+                    </motion.div>
+                  </div>
+                </div>
+                <p>-</p>
+                <div className="time-two">
+                  <p>
+                    {endHour} : {endMinute}
+                  </p>
+                  <div className="time-list">
+                    <motion.div
+                      className="hour-list"
+                      style={{ maxHeight: timeHeight }}
+                    >
+                      {selectedTimeZone == "12" ? (
+                        hoursAM.length > 0 ? (
+                          hoursAM.map((endHour) => (
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              transition={{ duration: 0.1 }}
+                              key={endHour}
+                              onClick={setendHour}
+                            >
+                              {endHour}
+                            </motion.button>
+                          ))
+                        ) : (
+                          <div>
+                            <p>An error occured with the time thing.</p>
+                          </div>
+                        )
+                      ) : hours.length > 0 ? (
+                        hours.map((endHour) => (
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            transition={{ duration: 0.1 }}
+                            key={endHour}
+                            onClick={setendHour}
+                          >
+                            {endHour}
+                          </motion.button>
+                        ))
+                      ) : (
+                        <div>
+                          <p>An error occured with the time thing.</p>
+                        </div>
+                      )}
+                    </motion.div>
+                    <motion.div
+                      className="minute-list"
+                      style={{ maxHeight: timeHeight }}
+                    >
+                      {minutes.length > 0 ? (
+                        minutes.map((endMinute) => (
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            transition={{ duration: 0.1 }}
+                            key={endMinute}
+                            onClick={setendMinute}
+                          >
+                            {endMinute}
+                          </motion.button>
+                        ))
+                      ) : (
+                        <div>
+                          <p>An error occured with the time thing.</p>
+                        </div>
+                      )}
+                    </motion.div>
+                  </div>
+                </div>
               </div>
             </Collapse>
             <Collapse isOpened={true}>
@@ -498,8 +689,13 @@ function AddTask(taskInfo) {
                   className="newtask-field"
                   type="text"
                   id="content"
+                  defaultValue={edit ? taskInfo.info.content : ""}
                   onChange={(e) => setContent(e.target.value)}
-                  placeholder={"This is what has to be done in detail"}
+                  placeholder={
+                    edit
+                      ? taskInfo.info.content
+                      : "This is what has to be done in detail"
+                  }
                 ></motion.input>
               </form>
             </Collapse>
@@ -638,6 +834,7 @@ function AddTask(taskInfo) {
                   className="newtask-field"
                   type="text"
                   id="comment"
+                  defaultValue={edit ? taskInfo.info.comment : ""}
                   onChange={(e) => setComment(e.target.value)}
                   placeholder={"You got this, pussy!"}
                 ></motion.input>
@@ -717,7 +914,7 @@ function AddTask(taskInfo) {
                         >
                           {title}
                           <h1 className="task-time">
-                            {hour}:{minute}
+                            {hour}:{minute} - {endHour}:{endMinute}
                           </h1>
                         </h1>
                       </div>
@@ -745,8 +942,29 @@ function AddTask(taskInfo) {
               className="upload-task-button"
               type="submit"
             >
-              <AiOutlinePlus />
-              <p>ADD TASK</p>
+              {edit ? (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <AiOutlineCheck />
+                  <p>EDIT TASK</p>{" "}
+                </div>
+              ) : (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <AiOutlinePlus />
+                  <p>ADD TASK</p>{" "}
+                </div>
+              )}
             </motion.button>
           </motion.div>
         </Collapse>

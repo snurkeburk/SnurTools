@@ -18,6 +18,7 @@ import TestPage from "./TestPage";
 import { getCurrentFriendId } from "../compontents/Auth/HandleUser";
 import { doc, getDoc } from "firebase/firestore";
 import UserTasks from "./UserTasks";
+import Cookies from "js-cookie";
 function Home() {
   const [background, setBackground] = useState("");
   const [fid, setFid] = useState("");
@@ -44,6 +45,15 @@ function Home() {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         setBackground(docSnap.data().background);
+        // check if background cookie is emepty
+        if (Cookies.get("background") === "") {
+          Cookies.set("background", docSnap.data().background);
+        } else {
+          // check if background cookie is different from the background
+          if (Cookies.get("background") !== docSnap.data().background) {
+            Cookies.set("background", docSnap.data().background);
+          }
+        }
       } else {
         // doc.data() will be undefined in this case
         console.log("No such document!");

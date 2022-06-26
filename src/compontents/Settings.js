@@ -16,6 +16,7 @@ import { motion } from "framer-motion";
 import { MdAdd, MdArrowDownward, MdRefresh } from "react-icons/md";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { authentication, db } from "../services/firebase-config";
+import Switch from "react-switch";
 function Settings() {
   //TODO: useState(current)
   const [tintColor, setTintColor] = useState("");
@@ -31,8 +32,34 @@ function Settings() {
         <p>text color</p>
   */
   useEffect(() => {
+    fetchBackgroundBlur().then((re) => {
+      setTintBlur(re.blur);
+      setTintOpacity(re.opacity);
+    });
     fetchBackground().then((re) => setCustomBg(re));
   }, []);
+  const [blurChecked, setBlurChecked] = useState(false);
+  const handleChange = (nextChecked) => {
+    setBlurChecked(nextChecked);
+  };
+
+  async function fetchBackgroundBlur() {
+    try {
+      const docRef = doc(db, "users", authentication.currentUser.uid);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        return {
+          opacity: docSnap.data().tintOpacity,
+          blur: docSnap.data().tintBlur,
+        };
+      } else {
+        // doc.data() will be undefined in this case
+        return "";
+      }
+    } catch (e) {
+      console.log("Error uploading background: " + e);
+    }
+  }
   async function fetchBackground() {
     const docRef = doc(db, "users", authentication.currentUser.uid);
     const docSnap = await getDoc(docRef);
@@ -105,6 +132,8 @@ function Settings() {
       await setDoc(doc(db, "users", authentication.currentUser.uid), userData, {
         merge: true,
       });
+      // set url in cookie called background
+      document.cookie = `background=${url}`;
     } catch (e) {
       console.log("Error uploading background: " + e);
     }
@@ -117,6 +146,22 @@ function Settings() {
     },
     hidebg: { opacity: 0, duration: 0.5, display: "none" },
   };
+
+  async function saveSettingsToProfile() {
+    try {
+      const userData = {
+        //tintColor: tintColor,
+        tintOpacity: tintOpacity,
+        tintBlur: tintBlur,
+      };
+      console.log(userData);
+      await setDoc(doc(db, "users", authentication.currentUser.uid), userData, {
+        merge: true,
+      });
+    } catch (e) {
+      console.log("error saving settings: " + e);
+    }
+  }
   return (
     <div className="settings-header">
       <h1>Settings</h1>
@@ -175,7 +220,21 @@ function Settings() {
             </motion.div>
           </motion.div>
         </div>
-
+        <Switch
+          onChange={handleChange}
+          checked={blurChecked}
+          onColor="#86d3ff"
+          onHandleColor="#2693e6"
+          handleDiameter={30}
+          uncheckedIcon={false}
+          checkedIcon={false}
+          boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+          activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+          height={20}
+          width={48}
+          id="material-switch"
+          className="react-switch"
+        />
         <p
           style={{
             fontSize: "1rem",
@@ -229,6 +288,8 @@ function Settings() {
               />
             </Stack>
           </Box>
+          <p>Submit</p>
+          <button onClick={() => saveSettingsToProfile()}>save</button>
         </div>
       </div>
       <div className="s-theme"></div>

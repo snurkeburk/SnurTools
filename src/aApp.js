@@ -25,12 +25,20 @@ import CreateProfile from "./pages/CreateProfile";
 function App() {
   const [allowed, setAllowed] = useState(false);
   const [requiresUsername, setRequiresUsername] = useState(true);
+  const [background, setBackground] = useState("");
   // use comonentDidMount lifecycle method
   //Check user
   useEffect(() => {
     awaitAuthenticationFetch();
   });
 
+  useEffect(() => {
+    // get the background url from the cookies
+    const bg = Cookies.get("background");
+    if (bg) {
+      setBackground(bg);
+    }
+  }, []);
   async function awaitAuthenticationFetch() {
     // awaits google auth fetch to complete before calling func
     if (authentication.currentUser == undefined) {

@@ -39,7 +39,7 @@ export const FetchDayTask = async (week, day, id) => {
   }
   let task = [];
   console.log(week, day, id);
-
+  
   const taskRef = collection(
     db,
     "users",

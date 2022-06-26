@@ -10,13 +10,15 @@ import {
 } from "firebase/firestore";
 import { db } from "../../services/firebase-config";
 import { FetchProfileId } from "../Fetch/FetchProfileId";
+
 export const FetchWeekNumber = (i) => {
   const currentDate = new Date();
   const startDate = new Date(currentDate.getFullYear(), 0, 1);
   var days = Math.floor((currentDate - startDate) / (24 * 60 * 60 * 1000));
-  var weekNumber = Math.ceil((currentDate.getDay() + 1 + days) / 7);
+
+  var weekNumber = Math.ceil(days / 7);
+
   // Display the calculated result
-  console.log(weekNumber);
   return weekNumber + i.pm;
 };
 
@@ -75,9 +77,8 @@ export const FetchWeek = async (id) => {
     const currentDate = new Date();
     const startDate = new Date(currentDate.getFullYear(), 0, 1);
     var days = Math.floor((currentDate - startDate) / (24 * 60 * 60 * 1000));
-    var weekNumber = Math.ceil((currentDate.getDay() + 1 + days) / 7);
-    // Display the calculated result
-    console.log(weekNumber - 1);
+
+    var weekNumber = Math.ceil(days / 7);
     // fetch collection called 1 from the database
     let w = weekNumber;
     // convert to string
@@ -101,9 +102,8 @@ export const FetchWeek = async (id) => {
     const currentDate = new Date();
     const startDate = new Date(currentDate.getFullYear(), 0, 1);
     var days = Math.floor((currentDate - startDate) / (24 * 60 * 60 * 1000));
-    var weekNumber = Math.ceil((currentDate.getDay() + 1 + days) / 7);
-    // Display the calculated result
-    console.log(weekNumber - 1);
+
+    var weekNumber = Math.ceil(days / 7);
     // fetch collection called 1 from the database
     let w = weekNumber;
     // convert to string
@@ -117,10 +117,9 @@ export const FetchWeek = async (id) => {
       querySnapshot.forEach((_doc) => {
         // doc.data() is never undefined for query doc snapshots
         console.log(_doc.data());
-        task.push(...[_doc.data()]);
+        if (_doc.data()) task.push(...[_doc.data()]);
       });
     }
     console.log(task);
-    return task;
   }
 };

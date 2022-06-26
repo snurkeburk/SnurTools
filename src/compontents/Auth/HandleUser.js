@@ -36,7 +36,12 @@ export async function addUserToDatabase(username, name, email, uid) {
     username: username,
     friends: [], //TODO? add tutorial Ederraviel as friend from beginning
     timezone: "24",
+    status: "",
     uid: uid,
+    online: false,
+    tasksCurrent: 0,
+    tasksDone: 0,
+    tasksLeft: 0,
   };
   await setDoc(doc(db, "users", uid), userData);
   //TODO: ADD UID TO ID ARRAY IN DB

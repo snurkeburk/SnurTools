@@ -12,10 +12,11 @@ import Tasks from "../compontents/Tasks/Tasks";
 import TaskDay from "../compontents/Tasks/TaskDay";
 import { Link, useParams } from "react-router-dom";
 import { FetchProfileInfo } from "../compontents/Fetch/FetchProfile";
-import { authentication } from "../services/firebase-config";
+import { authentication, db } from "../services/firebase-config";
 import { FetchProfileId } from "../compontents/Fetch/FetchProfileId";
 import EderraMove from "../compontents/Tasks/EderraMove";
 import SelectDaysButton from "../compontents/Tasks/SelectDaysButton";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
 
 function UserTasks(id) {
   //EderraMove(); //! <<<< Use only to move weeks!!!!
@@ -30,9 +31,15 @@ function UserTasks(id) {
   const [currentUsername, setCurrentUsername] = useState("");
   const [daysToAdd, setDaysToAdd] = useState([]);
   const [viewingOtherProfile, setViewingOtherProfile] = useState(false);
+  const [currentFriend, setCurrentFriend] = useState("");
+  const [tintBlur, setTintBlur] = useState(0);
+  const [tintColor, setTintColor] = useState("#00000");
+  const [tintOpacity, setTintOpacity] = useState(0);
+  const [loading, setLoading] = useState(true);
   let _id = useParams().id; // gets the username from the url
   console.log(idCount);
   useEffect(() => {
+    setCurrentFriend(_id);
     FetchProfileInfo(authentication.currentUser.uid).then((re) =>
       setCurrentUsername(re.split("$")[1])
     );
@@ -40,6 +47,7 @@ function UserTasks(id) {
     FetchWeek(id).then((re) => setTasks(re));
     let k = parseInt(document.getElementById("nr").innerHTML.split(" ")[1]);
     setCurrentWeek(k);
+    setLoading(false);
   }, []);
   // create a function to see if the url changes and if so, update the tasks
   useEffect(() => {
@@ -51,7 +59,12 @@ function UserTasks(id) {
     let k = parseInt(document.getElementById("nr").innerHTML.split(" ")[1]);
     setCurrentWeek(k);
   }, [id.uid]);
-
+  // create a snapshot listener to the user
+  useEffect(() => {
+    onSnapshot(doc(db, "users", authentication.currentUser.uid), (doc) => {
+      FetchProfileTintSettings();
+    });
+  }, []);
   function weekSwitch(i) {
     setSwitchingWeek(1);
     setSwitchingWeekCount(i);
@@ -66,7 +79,7 @@ function UserTasks(id) {
       });
       const timer = setTimeout(() => {
         setSwitchingWeek(0);
-      }, 600);
+      }, 700);
     } else {
       // k = new week number
       let k =
@@ -75,12 +88,27 @@ function UserTasks(id) {
       FetchNewWeek(k, id.uid).then((re) => setTasks(re));
       const timer = setTimeout(() => {
         setSwitchingWeek(0);
-      }, 400);
+      }, 500);
     }
   }
-
+  async function FetchProfileTintSettings() {
+    const docRef = doc(db, "users", authentication.currentUser.uid);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      setTintBlur(docSnap.data().tintBlur);
+      setTintColor(docSnap.data().tintColor);
+      setTintOpacity(docSnap.data().tintOpacity);
+      console.log(
+        docSnap.data().tintBlur,
+        docSnap.data().tintColor,
+        docSnap.data().tintOpacity
+      );
+    } else {
+      // doc.data() will be undefined in this case
+      console.log("No such document!");
+    }
+  }
   const dayStyle = {
-    backgroundColor: "rgba(0, 0, 0, 0.252)",
     cursor: "pointer",
   };
   const taskRowStyle = {
@@ -131,6 +159,10 @@ function UserTasks(id) {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.5 }}
         className="task-top-container"
+        style={{
+          backgroundColor: "#000000" + tintOpacity,
+          backdropFilter: "blur(" + tintBlur / 10 + "px)",
+        }}
       >
         <div className="task-top-left">
           <p className="task-current-time">
@@ -237,6 +269,10 @@ function UserTasks(id) {
                 setDisplayWeek((displayWeek) => !displayWeek);
                 setDisplayDay("monday");
               }}
+              style={{
+                backgroundColor: "#000000" + tintOpacity,
+                backdropFilter: "blur(" + tintBlur / 10 + "px)",
+              }}
             >
               <p>Monday</p>
               {tasks.map((task, index) => {
@@ -245,25 +281,51 @@ function UserTasks(id) {
                     {task.day == "monday" ? (
                       <motion.div
                         key={index}
-                        style={{ backgroundColor: task.color }}
                         className="task-container"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
+                        style={{
+                          ...(task.completed
+                            ? {
+                                borderLeftStyle: "solid",
+                                borderColor: "lightgreen",
+                                borderWidth: "10px",
+                                backgroundColor: task.color,
+                              }
+                            : { backgroundColor: task.color }),
+                        }}
                       >
-                        <div>{task.title}</div>
-                        <div className="week-task-s">
-                          <p>{task.snurs}</p>
+                        <div className="week-task-t">{task.title}</div>{" "}
+                        <div>
+                          {task.time} - {task.endTime}
                         </div>
-                        <div>{task.time}</div>
-                        <div>{task.content}</div>
-                        {authentication.currentUser.uid != id.uid ||
-                        task.addedBy != currentUsername ? (
+                        {task.content.length > 0 ? (
+                          <div className="week-task-c">{task.content}</div>
+                        ) : (
+                          <div></div>
+                        )}
+                        {viewingOtherProfile && task.addedBy != _id ? (
+                          <div className="task-week-addedby">
+                            Added by: {task.addedBy}
+                          </div>
+                        ) : !viewingOtherProfile &&
+                          task.addedBy != currentUsername ? (
                           <div className="task-week-addedby">
                             Added by: {task.addedBy}
                           </div>
                         ) : (
                           <div></div>
                         )}
+                        <div
+                          className="week-task-s"
+                          style={{
+                            ...(task.snurs > 0
+                              ? { borderStyle: "solid" }
+                              : { borderStyle: "none" }),
+                          }}
+                        >
+                          {task.snurs > 0 ? <p>{task.snurs}</p> : <p></p>}
+                        </div>
                       </motion.div>
                     ) : (
                       <div></div>
@@ -280,6 +342,10 @@ function UserTasks(id) {
                 setDisplayWeek((displayWeek) => !displayWeek);
                 setDisplayDay("tuesday");
               }}
+              style={{
+                backgroundColor: "#000000" + tintOpacity,
+                backdropFilter: "blur(" + tintBlur / 10 + "px)",
+              }}
             >
               <p>Tuesday</p>
               {tasks.map((task, index) => {
@@ -288,25 +354,51 @@ function UserTasks(id) {
                     {task.day == "tuesday" ? (
                       <motion.div
                         key={index}
-                        style={{ backgroundColor: task.color }}
                         className="task-container"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
+                        style={{
+                          ...(task.completed
+                            ? {
+                                borderLeftStyle: "solid",
+                                borderColor: "lightgreen",
+                                borderWidth: "10px",
+                                backgroundColor: task.color,
+                              }
+                            : { backgroundColor: task.color }),
+                        }}
                       >
-                        <div>{task.title}</div>
-                        <div className="week-task-s">
-                          <p>{task.snurs}</p>
+                        <div className="week-task-t">{task.title}</div>{" "}
+                        <div>
+                          {task.time} - {task.endTime}
                         </div>
-                        <div>{task.time}</div>
-                        <div>{task.content}</div>
-                        {authentication.currentUser.uid != id.uid ||
-                        task.addedBy != currentUsername ? (
+                        {task.content.length > 0 ? (
+                          <div className="week-task-c">{task.content}</div>
+                        ) : (
+                          <div></div>
+                        )}
+                        {viewingOtherProfile && task.addedBy != _id ? (
+                          <div className="task-week-addedby">
+                            Added by: {task.addedBy}
+                          </div>
+                        ) : !viewingOtherProfile &&
+                          task.addedBy != currentUsername ? (
                           <div className="task-week-addedby">
                             Added by: {task.addedBy}
                           </div>
                         ) : (
                           <div></div>
                         )}
+                        <div
+                          className="week-task-s"
+                          style={{
+                            ...(task.snurs > 0
+                              ? { borderStyle: "solid" }
+                              : { borderStyle: "none" }),
+                          }}
+                        >
+                          {task.snurs > 0 ? <p>{task.snurs}</p> : <p></p>}
+                        </div>
                       </motion.div>
                     ) : (
                       <div></div>
@@ -323,6 +415,10 @@ function UserTasks(id) {
                 setDisplayWeek((displayWeek) => !displayWeek);
                 setDisplayDay("wednesday");
               }}
+              style={{
+                backgroundColor: "#000000" + tintOpacity,
+                backdropFilter: "blur(" + tintBlur / 10 + "px)",
+              }}
             >
               <p>Wednesday</p>
               {tasks.map((task, index) => {
@@ -331,25 +427,51 @@ function UserTasks(id) {
                     {task.day == "wednesday" ? (
                       <motion.div
                         key={index}
-                        style={{ backgroundColor: task.color }}
                         className="task-container"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
+                        style={{
+                          ...(task.completed
+                            ? {
+                                borderLeftStyle: "solid",
+                                borderColor: "lightgreen",
+                                borderWidth: "10px",
+                                backgroundColor: task.color,
+                              }
+                            : { backgroundColor: task.color }),
+                        }}
                       >
-                        <div>{task.title}</div>
-                        <div className="week-task-s">
-                          <p>{task.snurs}</p>
+                        <div className="week-task-t">{task.title}</div>{" "}
+                        <div>
+                          {task.time} - {task.endTime}
                         </div>
-                        <div>{task.time}</div>
-                        <div>{task.content}</div>
-                        {authentication.currentUser.uid != id.uid ||
-                        task.addedBy != currentUsername ? (
+                        {task.content.length > 0 ? (
+                          <div className="week-task-c">{task.content}</div>
+                        ) : (
+                          <div></div>
+                        )}{" "}
+                        {viewingOtherProfile && task.addedBy != _id ? (
+                          <div className="task-week-addedby">
+                            Added by: {task.addedBy}
+                          </div>
+                        ) : !viewingOtherProfile &&
+                          task.addedBy != currentUsername ? (
                           <div className="task-week-addedby">
                             Added by: {task.addedBy}
                           </div>
                         ) : (
                           <div></div>
                         )}
+                        <div
+                          className="week-task-s"
+                          style={{
+                            ...(task.snurs > 0
+                              ? { borderStyle: "solid" }
+                              : { borderStyle: "none" }),
+                          }}
+                        >
+                          {task.snurs > 0 ? <p>{task.snurs}</p> : <p></p>}
+                        </div>
                       </motion.div>
                     ) : (
                       <div></div>
@@ -366,6 +488,10 @@ function UserTasks(id) {
                 setDisplayWeek((displayWeek) => !displayWeek);
                 setDisplayDay("thursday");
               }}
+              style={{
+                backgroundColor: "#000000" + tintOpacity,
+                backdropFilter: "blur(" + tintBlur / 10 + "px)",
+              }}
             >
               <p>Thursday</p>
               {tasks.map((task, index) => {
@@ -374,25 +500,51 @@ function UserTasks(id) {
                     {task.day == "thursday" ? (
                       <motion.div
                         key={index}
-                        style={{ backgroundColor: task.color }}
                         className="task-container"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
+                        style={{
+                          ...(task.completed
+                            ? {
+                                borderLeftStyle: "solid",
+                                borderColor: "lightgreen",
+                                borderWidth: "10px",
+                                backgroundColor: task.color,
+                              }
+                            : { backgroundColor: task.color }),
+                        }}
                       >
-                        <div>{task.title}</div>
-                        <div className="week-task-s">
-                          <p>{task.snurs}</p>
+                        <div className="week-task-t">{task.title}</div>{" "}
+                        <div>
+                          {task.time} - {task.endTime}
                         </div>
-                        <div>{task.time}</div>
-                        <div>{task.content}</div>
-                        {authentication.currentUser.uid != id.uid ||
-                        task.addedBy != currentUsername ? (
+                        {task.content.length > 0 ? (
+                          <div className="week-task-c">{task.content}</div>
+                        ) : (
+                          <div></div>
+                        )}{" "}
+                        {viewingOtherProfile && task.addedBy != _id ? (
+                          <div className="task-week-addedby">
+                            Added by: {task.addedBy}
+                          </div>
+                        ) : !viewingOtherProfile &&
+                          task.addedBy != currentUsername ? (
                           <div className="task-week-addedby">
                             Added by: {task.addedBy}
                           </div>
                         ) : (
                           <div></div>
                         )}
+                        <div
+                          className="week-task-s"
+                          style={{
+                            ...(task.snurs > 0
+                              ? { borderStyle: "solid" }
+                              : { borderStyle: "none" }),
+                          }}
+                        >
+                          {task.snurs > 0 ? <p>{task.snurs}</p> : <p></p>}
+                        </div>
                       </motion.div>
                     ) : (
                       <div></div>
@@ -409,6 +561,10 @@ function UserTasks(id) {
                 setDisplayWeek((displayWeek) => !displayWeek);
                 setDisplayDay("friday");
               }}
+              style={{
+                backgroundColor: "#000000" + tintOpacity,
+                backdropFilter: "blur(" + tintBlur / 10 + "px)",
+              }}
             >
               <p>Friday</p>
               {tasks.map((task, index) => {
@@ -417,25 +573,51 @@ function UserTasks(id) {
                     {task.day == "friday" ? (
                       <motion.div
                         key={index}
-                        style={{ backgroundColor: task.color }}
                         className="task-container"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
+                        style={{
+                          ...(task.completed
+                            ? {
+                                borderLeftStyle: "solid",
+                                borderColor: "lightgreen",
+                                borderWidth: "10px",
+                                backgroundColor: task.color,
+                              }
+                            : { backgroundColor: task.color }),
+                        }}
                       >
-                        <div>{task.title}</div>
-                        <div className="week-task-s">
-                          <p>{task.snurs}</p>
+                        <div className="week-task-t">{task.title}</div>{" "}
+                        <div>
+                          {task.time} - {task.endTime}
                         </div>
-                        <div>{task.time}</div>
-                        <div>{task.content}</div>
-                        {authentication.currentUser.uid != id.uid ||
-                        task.addedBy != currentUsername ? (
+                        {task.content.length > 0 ? (
+                          <div className="week-task-c">{task.content}</div>
+                        ) : (
+                          <div></div>
+                        )}{" "}
+                        {viewingOtherProfile && task.addedBy != _id ? (
+                          <div className="task-week-addedby">
+                            Added by: {task.addedBy}
+                          </div>
+                        ) : !viewingOtherProfile &&
+                          task.addedBy != currentUsername ? (
                           <div className="task-week-addedby">
                             Added by: {task.addedBy}
                           </div>
                         ) : (
                           <div></div>
                         )}
+                        <div
+                          className="week-task-s"
+                          style={{
+                            ...(task.snurs > 0
+                              ? { borderStyle: "solid" }
+                              : { borderStyle: "none" }),
+                          }}
+                        >
+                          {task.snurs > 0 ? <p>{task.snurs}</p> : <p></p>}
+                        </div>
                       </motion.div>
                     ) : (
                       <div></div>
@@ -452,6 +634,10 @@ function UserTasks(id) {
                 setDisplayWeek((displayWeek) => !displayWeek);
                 setDisplayDay("saturday");
               }}
+              style={{
+                backgroundColor: "#000000" + tintOpacity,
+                backdropFilter: "blur(" + tintBlur / 10 + "px)",
+              }}
             >
               <p>Saturday</p>
               {tasks.map((task, index) => {
@@ -460,24 +646,51 @@ function UserTasks(id) {
                     {task.day == "saturday" ? (
                       <motion.div
                         key={index}
-                        style={{ backgroundColor: task.color }}
                         className="task-container"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
+                        style={{
+                          ...(task.completed
+                            ? {
+                                borderLeftStyle: "solid",
+                                borderColor: "lightgreen",
+                                borderWidth: "10px",
+                                backgroundColor: task.color,
+                              }
+                            : { backgroundColor: task.color }),
+                        }}
                       >
-                        <div>{task.title}</div>
-                        <div className="week-task-s">
-                          <p>{task.snurs}</p>
+                        <div className="week-task-t">{task.title}</div>{" "}
+                        <div>
+                          {task.time} - {task.endTime}
                         </div>
-                        <div>{task.time}</div>
-                        <div>{task.content}</div>
-                        {authentication.currentUser.uid != id.uid ? (
+                        {task.content.length > 0 ? (
+                          <div className="week-task-c">{task.content}</div>
+                        ) : (
+                          <div></div>
+                        )}{" "}
+                        {viewingOtherProfile && task.addedBy != _id ? (
+                          <div className="task-week-addedby">
+                            Added by: {task.addedBy}
+                          </div>
+                        ) : !viewingOtherProfile &&
+                          task.addedBy != currentUsername ? (
                           <div className="task-week-addedby">
                             Added by: {task.addedBy}
                           </div>
                         ) : (
                           <div></div>
                         )}
+                        <div
+                          className="week-task-s"
+                          style={{
+                            ...(task.snurs > 0
+                              ? { borderStyle: "solid" }
+                              : { borderStyle: "none" }),
+                          }}
+                        >
+                          {task.snurs > 0 ? <p>{task.snurs}</p> : <p></p>}
+                        </div>
                       </motion.div>
                     ) : (
                       <div></div>
@@ -494,6 +707,10 @@ function UserTasks(id) {
                 setDisplayWeek((displayWeek) => !displayWeek);
                 setDisplayDay("sunday");
               }}
+              style={{
+                backgroundColor: "#000000" + tintOpacity,
+                backdropFilter: "blur(" + tintBlur / 10 + "px)",
+              }}
             >
               <p>Sunday</p>
               {tasks.map((task, index) => {
@@ -502,24 +719,51 @@ function UserTasks(id) {
                     {task.day == "sunday" ? (
                       <motion.div
                         key={index}
-                        style={{ backgroundColor: task.color }}
                         className="task-container"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
+                        style={{
+                          ...(task.completed
+                            ? {
+                                borderLeftStyle: "solid",
+                                borderColor: "lightgreen",
+                                borderWidth: "10px",
+                                backgroundColor: task.color,
+                              }
+                            : { backgroundColor: task.color }),
+                        }}
                       >
-                        <div>{task.title}</div>
-                        <div className="week-task-s">
-                          <p>{task.snurs}</p>
+                        <div className="week-task-t">{task.title}</div>{" "}
+                        <div>
+                          {task.time} - {task.endTime}
                         </div>
-                        <div>{task.time}</div>
-                        <div>{task.content}</div>
-                        {authentication.currentUser.uid != id.uid ? (
+                        {task.content.length > 0 ? (
+                          <div className="week-task-c">{task.content}</div>
+                        ) : (
+                          <div></div>
+                        )}{" "}
+                        {viewingOtherProfile && task.addedBy != _id ? (
+                          <div className="task-week-addedby">
+                            Added by: {task.addedBy}
+                          </div>
+                        ) : !viewingOtherProfile &&
+                          task.addedBy != currentUsername ? (
                           <div className="task-week-addedby">
                             Added by: {task.addedBy}
                           </div>
                         ) : (
                           <div></div>
                         )}
+                        <div
+                          className="week-task-s"
+                          style={{
+                            ...(task.snurs > 0
+                              ? { borderStyle: "solid" }
+                              : { borderStyle: "none" }),
+                          }}
+                        >
+                          {task.snurs > 0 ? <p>{task.snurs}</p> : <p></p>}
+                        </div>
                       </motion.div>
                     ) : (
                       <div></div>
