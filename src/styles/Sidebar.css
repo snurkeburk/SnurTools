@@ -3,10 +3,8 @@
     display: flex;
     justify-content: space-between;
     flex-direction: column;
-
 }
 .Sidebar-header {
-    background-color: rgba(0, 0, 0, 0.568);
     border-radius: 1.5rem;
     display: flex;
     justify-content: space-between;
@@ -21,6 +19,8 @@
     display: flex;
     flex-direction: column;
 }
+
+
 .sidebar-settings-alert {
     position: absolute;
     bottom: 25px;
@@ -58,6 +58,7 @@
     justify-content: flex-start;
 }
 .sidebar-buttons-bot{
+    margin-top: 0.3rem;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -98,6 +99,10 @@
     cursor: pointer;
     filter: opacity(20%);
 }
+.snurs-gif {
+    width: 2rem;
+    margin-right: 1rem;
+}
 .username-container {
     display: flex;
     flex-direction: column;
@@ -111,6 +116,7 @@
     color: yellow;
 }
 .quick-view-todo {
+    user-select: none;
     margin-top: 1rem;
     display: flex;
     flex-direction: column;
@@ -118,7 +124,7 @@
     justify-content: center;
 }
 .quick-view-todo .qvt-p {
-    font-size: 1.3rem;
+    font-size: 1.1rem;
 }
 .quick-view-todo h2 {
     font-size: 1.15rem;
@@ -348,12 +354,28 @@
     cursor: pointer;
 }
 
+
+.friend-pic-container {
+    overflow: hidden;
+
+}
+.indicator-f { 
+    background-clip: content-box;
+    font-size: 4rem;
+    position: absolute;
+    left: 50px;
+    background-clip: padding-box;
+    color: rgb(120, 216, 107);
+}
+
 .friend-pic {
     grid-column: 1;
     width: 2.4rem;
     height: 2.4rem;
     border-radius: 50%;
     margin-left: 1rem;
+    border-style: inset;
+    border-width: 2px;
 }
 .groups {
     width: 100%;
@@ -462,6 +484,7 @@
     width: 11rem;
 
 }
+
 .submit-friend {
     margin-top: .5rem;
     background:none ;
@@ -480,6 +503,105 @@
     cursor: pointer;
     transition-duration: 200ms;
     background-color: rgba(236, 236, 236, 0.397)
+}
+
+/* if screen size is less than 600px */
+@media screen and (max-width: 800px) {
+    .profile-container{
+        width: 4rem;
+        padding: 0;
+    }
+    .profile-pic-main{
+        width: 3rem;
+        height: 3rem;
+    }
+    .Sidebar-header {
+        background-color: rgba(0, 0, 0, 0.568);
+        display: flex;
+        justify-content: space-between;
+        height: calc(93vh - 40px);
+        backdrop-filter: blur(0px);
+        width: 4rem;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+    .sidebar-whole {
+        padding: 0rem 0rem;
+        width: 4rem;
+    }
+    .sidebar-main {
+       width: 4rem;
+        padding: 1rem 0rem;
+        border-radius: .2rem;
+    }
+    .snurs {
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+        flex-direction: row;
+        margin-top: -0.4rem;
+        padding-bottom: 0.5rem;
+    }
+    .snurs-gif {
+        width: 1.2rem;
+        margin-right: 0rem;
+    }
+    .profile-tag{
+        font-size: 0.7rem;
+    }
+
+    .contacts-title, .groups-title, .username, .quick-view-todo p, .currrent-todo, .group-top p,.group-top h5{
+        display: none;
+    }
+
+    .contacts {
+        width: 4rem;
+        border-style: none;
+        margin: 0;
+        padding: 0;
+        border-bottom-style: solid;
+        border-top-style: solid;
+        border-color: rgba(240, 248, 255, 0.37);
+    }
+    .groups {
+        border-style: none;
+        margin-left: -.4rem;
+
+    }
+    .friend-inner .friend-top{
+        display: none;
+    }
+    .friend {
+        margin-left: 0.6rem;
+    }
+    .friend-pic {
+        padding: 0;
+        margin: 0;
+    }
+    .sidebar-buttons-bot-l {
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        height: 4.2rem;
+    }
+    .sidebar-buttons-bot {
+        width: 4rem;
+        flex-wrap: nowrap;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        flex-direction: column-reverse;
+    }
+    
+    .button {
+        margin: 0.5rem 0rem;
+    }
+    .Sidebar-header .inner-sb{
+        width: 4rem;
+    }
+    .groups {
+        width: 4rem;
+    }
+
 }
 
 @media screen and (max-height: 820px) {
