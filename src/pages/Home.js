@@ -19,6 +19,7 @@ import { getCurrentFriendId } from "../compontents/Auth/HandleUser";
 import { doc, getDoc } from "firebase/firestore";
 import UserTasks from "./UserTasks";
 import Cookies from "js-cookie";
+import TasksTop from "../compontents/Tasks/TasksTop";
 function Home() {
   const [background, setBackground] = useState("");
   const [fid, setFid] = useState("");

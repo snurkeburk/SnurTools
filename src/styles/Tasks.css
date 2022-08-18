@@ -112,7 +112,7 @@
 .sun{
     margin: 0;
     padding: 0;    
-    width: 99%;
+    width: 100%;
     border-style: none;
     display: flex;
     flex-direction: column;
@@ -151,6 +151,7 @@
     height: 3rem;
     border-top-left-radius: 2rem;
     border-top-right-radius: 2rem;
+    background-color: rgba(0, 0, 0, 0.45);
 }
 
 .task-top-mid {

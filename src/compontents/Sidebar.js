@@ -333,11 +333,11 @@ function Sidebar(e) {
       </motion.div>
       <div
         className="Sidebar-header"
-        style={{
+        /*style={{
           backgroundColor: "#000000" + tintOpacity,
           backdropFilter: "blur(" + tintBlur / 10 + "px)",
           backdropFilter: "blur(" + tintBlur / 10 + "px)",
-        }}
+        }}*/
       >
         <div className="inner-sb">
           <Collapse isOpened={settings}>

@@ -1,5 +1,6 @@
 import React, { cloneElement, useEffect, useState } from "react";
 import {
+  FetchMonthName,
   FetchNewWeek,
   FetchWeek,
   FetchWeekNumber,
@@ -17,6 +18,7 @@ import { FetchProfileId } from "../compontents/Fetch/FetchProfileId";
 import EderraMove from "../compontents/Tasks/EderraMove";
 import SelectDaysButton from "../compontents/Tasks/SelectDaysButton";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import DayDate from "../compontents/Tasks/Date";
 
 function UserTasks(id) {
   //EderraMove(); //! <<<< Use only to move weeks!!!!
@@ -110,6 +112,7 @@ function UserTasks(id) {
   }
   const dayStyle = {
     cursor: "pointer",
+    backgroundColor: "rgba(0,0,0,0.2)",
   };
   const taskRowStyle = {
     display: "flex",
@@ -159,10 +162,10 @@ function UserTasks(id) {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.5 }}
         className="task-top-container"
-        style={{
+        /* style={{
           backgroundColor: "#000000" + tintOpacity,
           backdropFilter: "blur(" + tintBlur / 10 + "px)",
-        }}
+        }}*/
       >
         <div className="task-top-left">
           <p className="task-current-time">
@@ -185,7 +188,8 @@ function UserTasks(id) {
               <BsArrowLeftCircle pm={weekCounter} />
             </button>
             <p id="nr">
-              Week <FetchWeekNumber pm={weekCounter} />
+              <FetchMonthName pm={weekCounter} />{" "}
+              <FetchWeekNumber pm={weekCounter} />
             </p>
             <button
               onClick={() => {
@@ -253,14 +257,6 @@ function UserTasks(id) {
             animate={switchingWeek == 0 ? "show" : "hidden"}
             exit={{ opacity: 0, height: 0 }}
           >
-            {/* <SelectDaysButton day={"monday"} week={currentWeek.toString()} />
-            <SelectDaysButton day={"tuesday"} week={currentWeek.toString()} />
-            <SelectDaysButton day={"wednesday"} week={currentWeek.toString()} />
-            <SelectDaysButton day={"thursday"} week={currentWeek.toString()} />
-            <SelectDaysButton day={"friday"} week={currentWeek.toString()} />
-            <SelectDaysButton day={"saturday"} week={currentWeek.toString()} />
-            <SelectDaysButton day={"sunday"} week={currentWeek.toString()} />
-            */}
             <motion.button
               whileHover={dayStyle}
               className="mon"
@@ -269,12 +265,9 @@ function UserTasks(id) {
                 setDisplayWeek((displayWeek) => !displayWeek);
                 setDisplayDay("monday");
               }}
-              style={{
-                backgroundColor: "#000000" + tintOpacity,
-                backdropFilter: "blur(" + tintBlur / 10 + "px)",
-              }}
             >
               <p>Monday</p>
+              <DayDate d={0} w={currentWeek} />
               {tasks.map((task, index) => {
                 return (
                   <div key={index} style={taskRowStyle}>
@@ -342,12 +335,14 @@ function UserTasks(id) {
                 setDisplayWeek((displayWeek) => !displayWeek);
                 setDisplayDay("tuesday");
               }}
-              style={{
+              /*style={{
                 backgroundColor: "#000000" + tintOpacity,
                 backdropFilter: "blur(" + tintBlur / 10 + "px)",
-              }}
+              }}*/
             >
               <p>Tuesday</p>
+              <DayDate d={1} w={currentWeek} />
+
               {tasks.map((task, index) => {
                 return (
                   <div key={index} style={taskRowStyle}>
@@ -415,12 +410,14 @@ function UserTasks(id) {
                 setDisplayWeek((displayWeek) => !displayWeek);
                 setDisplayDay("wednesday");
               }}
-              style={{
+              /*style={{
                 backgroundColor: "#000000" + tintOpacity,
                 backdropFilter: "blur(" + tintBlur / 10 + "px)",
-              }}
+              }}*/
             >
               <p>Wednesday</p>
+              <DayDate d={2} w={currentWeek} />
+
               {tasks.map((task, index) => {
                 return (
                   <div key={index} style={taskRowStyle}>
@@ -488,12 +485,14 @@ function UserTasks(id) {
                 setDisplayWeek((displayWeek) => !displayWeek);
                 setDisplayDay("thursday");
               }}
-              style={{
+              /*style={{
                 backgroundColor: "#000000" + tintOpacity,
                 backdropFilter: "blur(" + tintBlur / 10 + "px)",
-              }}
+              }}*/
             >
               <p>Thursday</p>
+              <DayDate d={3} w={currentWeek} />
+
               {tasks.map((task, index) => {
                 return (
                   <div key={index} style={taskRowStyle}>
@@ -561,12 +560,14 @@ function UserTasks(id) {
                 setDisplayWeek((displayWeek) => !displayWeek);
                 setDisplayDay("friday");
               }}
-              style={{
+              /*style={{
                 backgroundColor: "#000000" + tintOpacity,
                 backdropFilter: "blur(" + tintBlur / 10 + "px)",
-              }}
+              }}*/
             >
               <p>Friday</p>
+              <DayDate d={4} w={currentWeek} />
+
               {tasks.map((task, index) => {
                 return (
                   <div key={index} style={taskRowStyle}>
@@ -634,12 +635,14 @@ function UserTasks(id) {
                 setDisplayWeek((displayWeek) => !displayWeek);
                 setDisplayDay("saturday");
               }}
-              style={{
+              /*style={{
                 backgroundColor: "#000000" + tintOpacity,
                 backdropFilter: "blur(" + tintBlur / 10 + "px)",
-              }}
+              }}*/
             >
               <p>Saturday</p>
+              <DayDate d={5} w={currentWeek} />
+
               {tasks.map((task, index) => {
                 return (
                   <div key={index} style={taskRowStyle}>
@@ -707,12 +710,13 @@ function UserTasks(id) {
                 setDisplayWeek((displayWeek) => !displayWeek);
                 setDisplayDay("sunday");
               }}
-              style={{
+              /*style={{
                 backgroundColor: "#000000" + tintOpacity,
                 backdropFilter: "blur(" + tintBlur / 10 + "px)",
-              }}
+              }}*/
             >
               <p>Sunday</p>
+              <DayDate d={6} w={currentWeek} />
               {tasks.map((task, index) => {
                 return (
                   <div key={index} style={taskRowStyle}>
@@ -779,7 +783,7 @@ function UserTasks(id) {
       <AnimatePresence>
         {!displayWeek && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
+            initial={{ opacity: 0 }}
             animate={{
               opacity: 1,
               height: "calc(95vh - 35px)",
